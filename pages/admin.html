@@ -21,39 +21,37 @@
     <nav id="navbar">
         <ul>
         <li>
-            <button id="close-sidebar-button" onclick="closeSidebar()" aria-label="close sidebar">
+            <button id="close-sidebar-button" onclick="closeSidebar()" aria-label="close sidebar" style="display: none;">
             <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#c9c9c9"><path d="m480-444.62-209.69 209.7q-7.23 7.23-17.5 7.42-10.27.19-17.89-7.42-7.61-7.62-7.61-17.7 0-10.07 7.61-17.69L444.62-480l-209.7-209.69q-7.23-7.23-7.42-17.5-.19-10.27 7.42-17.89 7.62-7.61 17.7-7.61 10.07 0 17.69 7.61L480-515.38l209.69-209.7q7.23-7.23 17.5-7.42 10.27-.19 17.89 7.42 7.61 7.62 7.61 17.7 0 10.07-7.61 17.69L515.38-480l209.7 209.69q7.23 7.23 7.42 17.5.19 10.27-7.42 17.89-7.62 7.61-17.7 7.61-10.07 0-17.69-7.61L480-444.62Z"/></svg>
             </button>
         </li>
-        <li class="home-li">
+        <li class="home-li" style="display: none;">
             <a href="../index.html">
                 <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg>
                 Home
             </a>
         </li>
-        <li>
+        <li style="display: none;">
             <a href="../pages/about.html">
                 <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm720 0v-120q0-44-24.5-84.5T666-434q51 6 96 20.5t84 35.5q36 20 55 44.5t19 53.5v120H760ZM360-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm400-160q0 66-47 113t-113 47q-11 0-28-2.5t-28-5.5q27-32 41.5-71t14.5-81q0-42-14.5-81T544-792q14-5 28-6.5t28-1.5q66 0 113 47t47 113ZM120-240h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0 320Zm0-400Z"/></svg>
                 About
             </a>
         </li>
-        <li>
+        <li style="display: none;">
             <a href="../pages/market.html">
                 <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M160-720v-80h640v80H160Zm0 560v-240h-40v-80l40-200h640l40 200v80h-40v240h-80v-240H560v240H160Zm80-80h240v-160H240v160Zm-38-240h556-556Zm0 0h556l-24-120H226l-24 120Z"/></svg>
                 Market
             </a>
         </li>
-        <li><a class="accent-link" href="../pages/login.html" id="login-btn">Login</a></li>
-        <li id="logout-btn" class="logout-btn">
-            Đăng xuất
-        </li>
+        <li class="login-btn"><a  href="../pages/admin.html" id="login-btn">Login</a></li>
+        <li id="logout-btn" class="logout-btn">Đăng xuất</li>
         </ul>
     </nav>
     
     <div id="overlay" onclick="closeSidebar()" aria-hidden="true"></div>
 
     <div class="login-container" id="login-container">
-		<h2>Login</h2>
+		<h2>Admin login</h2>
 		<form id="loginForm">
 		<input type="text" id="username" placeholder="Username" required />
 		<input type="password" id="password" placeholder="Password" required />
@@ -67,7 +65,9 @@
             <ul class="admin-category-bar">
             <li id="market-tab" class="active">Market Control</li>
             <li id="accounts-tab">Accounts Control</li>
-            <li id="import-tab">Import Control</li>
+            <li id="imports-tab">Import Control</li>
+            <li id="price-tab">Price Control</li>
+             
             </ul>
         </div>
         <div class="admin-content">
@@ -131,6 +131,7 @@
                         <th>ID Phiếu</th>
                         <th>Ngày Nhập</th>
                         <th>Trạng Thái</th>
+                        <th>Sản phẩm nhập</th>
                         <th>Tổng Sản Phẩm</th>
                         <th>Hành Động</th>
                     </tr>
@@ -139,6 +140,27 @@
                     </tbody>
             </table>
         </div>
+        <div class="admin-price" id="price">
+            <div class="top-list">
+                <h2>Price Control</h2>
+            </div>
+            <label for="price-category-select" style="margin-right: 10px;">Chọn danh mục:</label>
+            <select id="price-category-select" style="padding: 5px;"></select>
+            <table class="price-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sản phẩm</th>
+                        <th>Giá nhập</th>
+                        <th>Lợi nhuận</th>
+                        <th>Giá bán</th>
+                        <th>Sửa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            </div>
         </div>              
     </div> 
         <div id="addform" class="frm">

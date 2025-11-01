@@ -53,7 +53,10 @@
   box-sizing: border-box;
   background-color: #ccc;
 }
-.admin-market {
+.admin-market,
+.admin-price,
+.admin-imports,
+.admin-accounts {
   background-color: rgb(66, 99, 66);
   color: #fff;
   border-radius: 10px;
@@ -79,7 +82,7 @@
 .add-product-bt:hover{
   background-color: aqua;
 }
-.product-table,.accounts-table,.imports-table {
+.product-table,.accounts-table,.imports-table,.price-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
@@ -93,14 +96,18 @@
 .accounts-table th,
 .accounts-table td,
 .imports-table th,
-.imports-table td {
+.imports-table td,
+.price-table th,
+.price-table td {
   border: 1px solid #000000;
   padding: 8px 10px;
   vertical-align: middle;
 }
 
 .product-table th,
-.accounts-table th {
+.accounts-table th,
+.imports-table th,
+.price-table th {
   font-weight: bold;
 }
 
@@ -112,7 +119,8 @@
 }
 
 .product-table td button,
-.accounts-table td button {
+.accounts-table td button,
+.price-table td button {
   background-color: #ffffff;
   border: none;
   color: rgb(23, 0, 0);
@@ -122,20 +130,12 @@
 }
 
 .product-table td button:hover,
-.accounts-table td button:hover {
+.accounts-table td button:hover,
+.price-table td button:hover {
   background-color: aqua;
 }
 
-.admin-accounts {
-  background-color: rgb(66, 99, 66);
-  color: #fff;
-  border-radius: 10px;
-  padding: 5px;
-  margin: 10px;
-  width: 95%;
-  box-shadow: #ddd;
-  display: none;
-}
+
 .add-accounts-bt{
   background-color: rgb(186, 184, 184);
   cursor: pointer;
@@ -282,21 +282,19 @@
   background-color: #555;
 }
 
+.login-btn{
+  margin-left: auto;
+  background-color: #08a58e;
+}
+
 .logout-btn {
     display: none; 
+    margin-left: auto;
     cursor: pointer;
     color: #ff8080;
     padding: 14px 16px;
 }
-.admin-imports {
-  background-color: rgb(66, 99, 66);
-  color: #fff;
-  border-radius: 10px;
-  padding: 5px;
-  margin: 10px;
-  width: 95%;
-  box-shadow: #ddd;
-}
+
 /* Bảng bên trong modal phiếu nhập */
 .slip-products-table {
     width: 100%;
@@ -367,4 +365,7 @@
 
 .modal-content .close-btn:hover {
     color: #ddd; /* Màu khi di chuột qua */
+}
+.profit-input{
+  width: 25px;
 }

@@ -2,8 +2,7 @@ import {
     market as defaultMarketItems
 } from './marketController.js';
 
-// Đổi tab market và accounts
-
+// Đổi tab market, accounts, import, price 
 function setActiveTab(tab) {
     document.querySelectorAll(".admin-category-bar li").forEach(li => li.classList.remove("active"));
     document.getElementById(`${tab}-tab`).classList.add("active");
@@ -11,27 +10,40 @@ function setActiveTab(tab) {
     const marketPanel = document.getElementById("market");
     const accountsPanel = document.getElementById("accounts");
     const importPanel =document.getElementById("imports");
+    const pricePanel=document.getElementById("price");
 
     if (tab === "market") {
         marketPanel.style.display = "block";
         accountsPanel.style.display = "none";
         importPanel.style.display="none";
+        pricePanel.style.display="none";
     } else if(tab === "accounts" ) {
         marketPanel.style.display = "none";
         accountsPanel.style.display = "block";
         importPanel.style.display="none";
+        pricePanel.style.display="none";
+    }
+    else if(tab === "imports" ) {
+        marketPanel.style.display = "none";
+        accountsPanel.style.display = "none";
+        importPanel.style.display="block";
+        pricePanel.style.display="none";
     }
     else {
         marketPanel.style.display = "none";
         accountsPanel.style.display = "none";
-        importPanel.style.display="block";
+        importPanel.style.display="none";
+        pricePanel.style.display="block";
+        renderPriceCategorySelector();
+        renderPriceTable();
     }
 }
 
 //xử lý sự kiện khi chuyển tab
 document.getElementById("market-tab").addEventListener("click", () => setActiveTab("market"));
 document.getElementById("accounts-tab").addEventListener("click", () => setActiveTab("accounts"));
-document.getElementById("import-tab").addEventListener("click",()=>setActiveTab("import"));
+document.getElementById("imports-tab").addEventListener("click",()=>setActiveTab("imports"));
+document.getElementById("price-tab").addEventListener("click",()=>setActiveTab("price"));
 // load sản phẩm đã lưu nếu không có thì load mặc định
 function loadProductsFromStorage() {
     const dataString = localStorage.getItem("adminProducts");
@@ -256,6 +268,7 @@ addProductForm.addEventListener("submit", (e) => {
     if (currentProductEditIndex !== null) {
         const oldItem = marketItems[currentCategory].items[currentProductEditIndex];
         newItem.active = oldItem.active; 
+        newItem.cost_price = oldItem.cost_price || 0;
         
         marketItems[currentCategory].items[currentProductEditIndex] = newItem;
     } else {
@@ -317,15 +330,6 @@ function renderProductTable() {
     })
 }
 
-
-//load tài khoản đã lưu
-//function loadAccountsFromStorage() {
-//    const dataString = localStorage.getItem("users");
-//    if (dataString) {
-//        return JSON.parse(dataString);
-//    }
-//    return  { username: "username",password: "123456", email: "user@gmail.com", active: true }
-//}
 
 //lưu tài khoản
 function saveAccountsToStorage() {
@@ -550,7 +554,7 @@ function getNextImportId() {
         return 1; // ID đầu tiên là 1
     }
     
-    // Lấy tất cả ID, chuyển thành số (ID cũ "PN_..." sẽ thành 0)
+    // Lấy tất cả ID, chuyển thành số 
     const allIds = importSlips.map(slip => parseInt(slip.id) || 0);
     
     // Tìm ID lớn nhất và + 1
@@ -608,14 +612,19 @@ function renderImportsTable(slipsToRender = importSlips) {
     slipsToRender.forEach(slip => {
         const tr = document.createElement("tr");
         const isCompleted = slip.status === 'completed';
+
+        const productNames = slip.products.map(p => p.name);
+        const productNamesString = productNames.join(', ');
+
         const totalProducts = slip.products.reduce((sum, p) => sum + p.quantity, 0);
 
         tr.innerHTML = `
             <td>${slip.id}</td>
             <td>${slip.importDate}</td>
-            <td style="color: ${isCompleted ? 'green' : 'orange'};">
+            <td style="color: ${isCompleted ? 'white' : 'black'};">
                 ${isCompleted ? 'Đã hoàn thành' : 'Đang xử lý'}
             </td>
+            <td>${productNamesString}</td>
             <td>${totalProducts}</td>
             <td>
                 <button class="view-btn import-view-btn" data-id="${slip.id}" title="Xem chi tiết">
@@ -641,7 +650,6 @@ function populateProductSelect() {
     if (!importProductSelectEl) return;
     importProductSelectEl.innerHTML = '<option value="">-- Chọn sản phẩm --</option>';
     
-    // Lấy marketItems từ code đã có của bạn
     Object.keys(marketItems).forEach(categoryName => {
         const optgroup = document.createElement('optgroup');
         optgroup.label = categoryName;
@@ -650,7 +658,7 @@ function populateProductSelect() {
         if (categoryData && categoryData.items) {
             categoryData.items.forEach(item => {
                 const option = document.createElement('option');
-                // Lưu data (tên và category) vào value
+                
                 option.value = JSON.stringify({ name: item.name, category: categoryName });
                 option.textContent = item.name;
                 optgroup.appendChild(option);
@@ -707,7 +715,7 @@ function openEditImportModal(slipId) {
 function closeImportModal() {
     if (importModal) importModal.classList.remove("visible");
 }
-// === (MỚI) Hàm Mở modal XEM chi tiết phiếu ===
+// === Hàm Mở modal XEM chi tiết phiếu ===
 function openViewImportModal(slipId) {
     const slip = importSlips.find(s => s.id === slipId);
     if (!slip) {
@@ -743,7 +751,7 @@ function openViewImportModal(slipId) {
     if (viewModal) viewModal.classList.add("visible");
 }
 
-// === (MỚI) Thêm sự kiện đóng modal "Xem" ===
+// ===  Thêm sự kiện đóng modal "Xem" ===
 function closeViewImportModal() {
     if (viewModal) viewModal.classList.remove("visible");
 }
@@ -839,13 +847,12 @@ if (importForm) {
 }
 
 // Xử lý sự kiện cho các nút trên bảng chính (Sửa, Hoàn thành)
-// Xử lý sự kiện cho các nút trên bảng chính (Sửa, Hoàn thành)
 if (importsTableBody) {
     importsTableBody.addEventListener("click", (e) => {
         const viewBtn = e.target.closest(".import-view-btn");
         if (viewBtn) {
             openViewImportModal(parseInt(viewBtn.dataset.id));
-            return; // Dừng lại ngay
+            return; 
         }
         const editBtn = e.target.closest(".import-edit-btn");
         if (editBtn) {
@@ -862,48 +869,60 @@ if (importsTableBody) {
                 if (slipIndex > -1) {
                     const slip = importSlips[slipIndex];
 
-                    // === 1. BẮT ĐẦU CẬP NHẬT KHO CHÍNH ===
+                   
                     let allProductsFound = true;
                     
                     slip.products.forEach(slipProduct => {
-                        // 2. Tìm sản phẩm trong kho chính (marketItems)
+                        // Tìm sản phẩm trong kho chính (marketItems)
                         if (marketItems[slipProduct.category] && marketItems[slipProduct.category].items) {
                             
                             const productInStock = marketItems[slipProduct.category].items.find(
                                 item => item.name === slipProduct.name
                             );
                             
-                            // 3. Nếu tìm thấy, cộng dồn số lượng
+                            //  Nếu tìm thấy, cộng dồn số lượng
                             if (productInStock) {
-                                // Đảm bảo quantity là số
-                                productInStock.quantity = (parseInt(productInStock.quantity) || 0) + (parseInt(slipProduct.quantity) || 0);
-                            } else {
-                                // Cảnh báo nếu sản phẩm trong phiếu không còn tồn tại trong kho
-                                alert(`Lỗi: Sản phẩm "${slipProduct.name}" trong phiếu nhập không còn tồn tại trong danh mục "${slipProduct.category}".`);
-                                allProductsFound = false;
-                            }
-                        } else {
+                                
+                                    const old_qty = parseInt(productInStock.quantity) || 0;
+                                    // Lấy giá vốn cũ, nếu chưa có (là sản phẩm mới) thì dùng 0
+                                    const old_cost = parseFloat(productInStock.cost_price) || 0; 
+                                    const old_total_value = old_qty * old_cost;
+
+                                    const new_qty = parseInt(slipProduct.quantity) || 0;
+                                    const new_cost = parseFloat(slipProduct.importPrice) || 0;
+                                    const new_total_value = new_qty * new_cost;
+                                    const total_qty = old_qty + new_qty;
+                                    const total_value = old_total_value + new_total_value;
+
+                                    // Tính giá vốn trung bình mới
+                                    const new_avg_cost = (total_qty > 0) ? (total_value / total_qty) : 0;
+
+                                    // Cập nhật cả số lượng VÀ giá vốn
+                                    productInStock.quantity = total_qty;
+                                    productInStock.cost_price = new_avg_cost; 
+                                                                
+                                } else {
                             alert(`Lỗi: Danh mục "${slipProduct.category}" không tồn tại.`);
                             allProductsFound = false;
                         }
+                        }
                     });
 
-                    // 4. Nếu có lỗi (SP bị xóa...) thì không hoàn thành phiếu
+                    // Nếu có lỗi (SP bị xóa...) thì không hoàn thành phiếu
                     if (!allProductsFound) {
                         alert("Hoàn thành phiếu thất bại. Vui lòng kiểm tra lại sản phẩm trong phiếu.");
                         return;
                     }
 
-                    // 5. Lưu lại KHO CHÍNH (rất quan trọng!)
+                    // Lưu lại KHO CHÍNH (rất quan trọng!)
                     saveProductsToStorage();
-                    // === KẾT THÚC CẬP NHẬT KHO CHÍNH ===
 
 
-                    // 6. Cập nhật trạng thái phiếu và lưu phiếu
+                    // Cập nhật trạng thái phiếu và lưu phiếu
                     slip.status = "completed";
                     saveImportsToStorage();
                     
-                    // 7. Render lại cả hai bảng
+                    // Render lại cả hai bảng
                     renderImportsTable(); // Cập nhật bảng phiếu nhập
                     renderProductTable(); // Cập nhật bảng sản phẩm (để thấy SL mới)
                     
@@ -919,15 +938,155 @@ if (importsTableBody) {
 // Load dữ liệu khi trang tải
 importSlips = loadImportsFromStorage();
 
+const priceCategorySelect = document.getElementById("price-category-select");
+const priceTableBody = document.querySelector(".price-table tbody");
+let currentPriceCategory = Object.keys(marketItems)[0] || null;
+
+// Render danh mục cho tab Giá (tương tự tab Market)
+function renderPriceCategorySelector() {
+    if (!priceCategorySelect) return; 
+    priceCategorySelect.innerHTML = "";
+    
+    Object.keys(marketItems).forEach(categoryName => {
+        const categoryData = marketItems[categoryName];
+        const option = document.createElement("option");
+        option.value = categoryName;
+        option.textContent = categoryName + (categoryData.hidden ? " (Đang ẩn)" : "");
+        if (categoryName === currentPriceCategory) {
+            option.selected = true;
+        }
+        priceCategorySelect.appendChild(option);
+    });
+    // Đặt lại currentPriceCategory nếu nó không còn tồn tại
+    if (!marketItems[currentPriceCategory]) {
+        currentPriceCategory = Object.keys(marketItems)[0] || null;
+    }
+}
+
+// Render bảng giá
+function renderPriceTable() {
+    if (!priceTableBody) return;
+    priceTableBody.innerHTML = "";
+
+    if (!currentPriceCategory || !marketItems[currentPriceCategory]) {
+        priceTableBody.innerHTML = "<tr><td colspan='6'>Vui lòng chọn danh mục.</td></tr>";
+        return;
+    }
+
+    const itemsToRender = marketItems[currentPriceCategory].items || [];
+    let id = 1;
+
+    itemsToRender.forEach((item, index) => {
+        const cost_price = parseFloat(item.cost_price) || 0;
+        // Lấy giá bán và bỏ ký tự $
+        const selling_price = parseFloat(item.price.replace('$', '')) || 0; 
+        
+        // Tính lợi nhuận
+        let profit_margin = 0;
+        if (cost_price > 0) {
+            profit_margin = ((selling_price - cost_price) / cost_price) * 100;
+        }
+
+        const tr = document.createElement("tr");
+        // Lưu vị trí của item để biết Sửa/Lưu
+        tr.dataset.index = index; 
+
+        tr.innerHTML = `
+            <td>${id++}</td>
+            <td>${item.name}</td>
+            
+                        <td class="cost-price-cell" data-cost="${cost_price}">
+                ${cost_price} 
+            </td>
+
+                        <td>
+                <input 
+                    type="text" 
+                    class="profit-input" 
+                    value="${profit_margin}" 
+                    min="0" ;"
+                >%
+            </td>
+
+                        <td class="selling-price-cell">
+                $${selling_price}
+            </td>
+
+                        <td>
+                <button class="price-save-btn">Lưu</button>
+            </td>
+        `;
+        priceTableBody.appendChild(tr);
+    });
+}
+
+// Xử lý khi gõ vào ô Lợi nhuận (tính lại Giá bán)
+function handlePriceTableInput(e) {
+    if (!e.target.classList.contains('profit-input')) return;
+
+    const tr = e.target.closest('tr');
+    const costPriceCell = tr.querySelector('.cost-price-cell');
+    const sellingPriceCell = tr.querySelector('.selling-price-cell');
+    
+    const cost_price = parseFloat(costPriceCell.dataset.cost) || 0;
+    const new_margin_percent = parseFloat(e.target.value) || 0;
+    
+    // Tính giá bán mới
+    const new_selling_price = cost_price * (1 + new_margin_percent / 100);
+    
+    // Cập nhật ô giá bán (giữ định dạng "$")
+    sellingPriceCell.textContent = '$' + new_selling_price.toFixed(2);
+}
+
+// Xử lý khi nhấn nút "Lưu" (cập nhật giá bán vào marketItems)
+function handlePriceTableSave(e) {
+    if (!e.target.classList.contains('price-save-btn')) return;
+
+    const tr = e.target.closest('tr');
+    const index = tr.dataset.index;
+    
+    if (!currentPriceCategory || !marketItems[currentPriceCategory] || !marketItems[currentPriceCategory].items[index]) {
+        alert("Lỗi: Không tìm thấy sản phẩm!");
+        return;
+    }
+
+    // Lấy giá bán MỚI (đã được tính tự động)
+    const newSellingPriceText = tr.querySelector('.selling-price-cell').textContent;
+
+    // Cập nhật giá bán mới vào kho (marketItems)
+    const product = marketItems[currentPriceCategory].items[index];
+    product.price = newSellingPriceText; // Lưu lại (ví dụ: "$12.34")
+
+    saveProductsToStorage();
+    
+    // Cập nhật lại tab Market (vì giá bán đã thay đổi)
+    renderProductTable(); 
+
+    // Thông báo cho người dùng
+    alert("Đã lưu thành công");
+}
+
+// Gắn sự kiện cho tab Price
+if (priceCategorySelect) {
+    priceCategorySelect.addEventListener("change", (e) => {
+        currentPriceCategory = e.target.value;
+        renderPriceTable();
+    });
+}
+
+if (priceTableBody) {
+    priceTableBody.addEventListener('input', handlePriceTableInput);
+    priceTableBody.addEventListener('click', handlePriceTableSave);
+}
 
 function setupLogin() {
-    // Các phần tử cũ
+
     const loginContainer = document.getElementById("login-container");
     const adminWrapper = document.getElementById("admin-wrapper");
     const loginForm = document.getElementById("loginForm");
     const loginMessage = document.getElementById("loginMessage");
     
-    // Các phần tử MỚI ở navbar
+
     const navLoginLink = document.getElementById("login-btn");
     const navLogoutBtn = document.getElementById("logout-btn");
 
@@ -977,9 +1136,8 @@ function setupLogin() {
     }
 }
 
-// Gọi hàm này (như code cũ của bạn)
+
 setupLogin();
-// Gọi hàm này để chạy code
 setupLogin();
 //render mac dinh khi load trang
 renderCategorySelector();

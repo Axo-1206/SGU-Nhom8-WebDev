@@ -9,7 +9,8 @@ export const market = {
         active: true,
         description: "Giáo trình Toán lớp 12 giúp học sinh nắm vững kiến thức nền tảng.",
         quantity: 18,
-        releaseYear: 2024
+        releaseYear: 2024,
+        cost_price: 36  
       },
       {
         name: "Giải tích 1",
@@ -18,7 +19,8 @@ export const market = {
         active: true,
         description: "Khám phá các khái niệm giới hạn, đạo hàm và tích phân.",
         quantity: 10,
-        releaseYear: 2023
+        releaseYear: 2023,
+        cost_price: 68  
       },
       {
         name: "Xác suất thống kê",
@@ -27,7 +29,8 @@ export const market = {
         active: true,
         description: "Tài liệu cơ bản về xác suất và thống kê ứng dụng.",
         quantity: 22,
-        releaseYear: 2022
+        releaseYear: 2022,
+        cost_price: 24  
       },
       {
         name: "Lý thuyết đồ thị",
@@ -36,7 +39,8 @@ export const market = {
         active: true,
         description: "Giới thiệu các khái niệm và thuật toán trong đồ thị.",
         quantity: 15,
-        releaseYear: 2021
+        releaseYear: 2021,
+        cost_price: 36  
       },
       {
         name: "Triết học",
@@ -45,7 +49,8 @@ export const market = {
         active: true,
         description: "Tổng quan các trường phái triết học phương Tây và phương Đông.",
         quantity: 8,
-        releaseYear: 2020
+        releaseYear: 2020,
+        cost_price: 68  
       },
       {
         name: "Pháp luật đại cương",
@@ -54,7 +59,8 @@ export const market = {
         active: true,
         description: "Cẩm nang pháp luật cơ bản dành cho sinh viên.",
         quantity: 20,
-        releaseYear: 2023
+        releaseYear: 2023,
+        cost_price: 24  
       },
       {
         name: "Toán rời rạc",
@@ -63,7 +69,8 @@ export const market = {
         active: true,
         description: "Phân tích các cấu trúc toán học không liên tục.",
         quantity: 12,
-        releaseYear: 2022
+        releaseYear: 2022,
+        cost_price: 36  
       },
       {
         name: "Cờ tướng",
@@ -72,7 +79,8 @@ export const market = {
         active: true,
         description: "Chiến thuật và kỹ năng chơi cờ tướng chuyên sâu.",
         quantity: 30,
-        releaseYear: 2021
+        releaseYear: 2021,
+        cost_price: 24  
       },
       {
         name: "Kinh tế chính trị",
@@ -81,7 +89,8 @@ export const market = {
         active: true,
         description: "Phân tích các học thuyết kinh tế và chính trị hiện đại.",
         quantity: 14,
-        releaseYear: 2024
+        releaseYear: 2024,
+        cost_price: 36  
       }
     ]
   },
@@ -96,7 +105,8 @@ export const market = {
         active: true,
         description: "Hướng dẫn thiết kế và quản lý hệ thống cơ sở dữ liệu.",
         quantity: 7,
-        releaseYear: 2022
+        releaseYear: 2022,
+        cost_price: 72  
       },
       {
         name: "Cấu trúc dữ liệu và giải thuật",
@@ -105,7 +115,8 @@ export const market = {
         active: true,
         description: "Tài liệu chuyên sâu về cấu trúc dữ liệu và thuật toán.",
         quantity: 16,
-        releaseYear: 2023
+        releaseYear: 2023,
+        cost_price: 32  
       },
       {
         name: "Kỹ thuật lập trình",
@@ -114,7 +125,8 @@ export const market = {
         active: true,
         description: "Giáo trình nhập môn lập trình với các ví dụ thực tế.",
         quantity: 25,
-        releaseYear: 2025
+        releaseYear: 2025,
+        cost_price: 12  
       }
     ]
   },
@@ -129,7 +141,8 @@ export const market = {
         active: true,
         description: "Học lập trình Java từ cơ bản đến nâng cao.",
         quantity: 14,
-        releaseYear: 2021
+        releaseYear: 2021,
+        cost_price: 36  
       },
       {
         name: "Lập trình hướng đối tượng",
@@ -138,7 +151,8 @@ export const market = {
         active: true,
         description: "Giáo trình OOP với ví dụ minh họa bằng Java và C++.",
         quantity: 11,
-        releaseYear: 2023
+        releaseYear: 2023,
+        cost_price: 68  
       },
       {
         name: "JavaScript",
@@ -147,7 +161,8 @@ export const market = {
         active: true,
         description: "Tài liệu học JavaScript cho phát triển web hiện đại.",
         quantity: 19,
-        releaseYear: 2024
+        releaseYear: 2024,
+        cost_price: 24  
       },
       {
         name: "C++",
@@ -156,7 +171,8 @@ export const market = {
         active: true,
         description: "Giáo trình C++ với các bài tập thực hành nâng cao.",
         quantity: 13,
-        releaseYear: 2022
+        releaseYear: 2022,
+        cost_price: 36  
       },
       {
         name: "Python",
@@ -165,7 +181,8 @@ export const market = {
         active: true,
         description: "Giáo trình Python dành cho phân tích dữ liệu và AI.",
         quantity: 9,
-        releaseYear: 2024
+        releaseYear: 2024,
+        cost_price: 68  
       },
       {
         name: "C#",
@@ -174,7 +191,8 @@ export const market = {
         active: true,
         description: "Hướng dẫn lập trình C# với ứng dụng thực tế.",
         quantity: 17,
-        releaseYear: 2021
+        releaseYear: 2021,
+        cost_price: 24  
       }
     ]
   }
