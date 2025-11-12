@@ -261,5 +261,32 @@
         </div>
     </div>
 
+    <!-- QR Payment Modal -->
+    <div class="qr-modal" id="qrModal" style="display: none;">
+        <div class="qr-modal-overlay"></div>
+        <div class="qr-modal-content">
+            <button class="qr-close-btn" onclick="closeQRModal()">×</button>
+            <h2>Quét mã QR để thanh toán</h2>
+            
+            <div class="qr-container">
+                <img id="qr-image" src="../assets/images/qr.jpg" alt="QR Code" class="qr-image" />
+            </div>
+            
+            <div class="countdown-section">
+                <p>Thời gian còn lại để thanh toán:</p>
+                <div class="countdown-timer">
+                    <span id="countdown-time">5:00</span>
+                </div>
+            </div>
+            
+            <p class="payment-status" id="paymentStatus">Đang chờ thanh toán...</p>
+            
+            <div style="display:flex; gap:12px; justify-content:center; margin-top:12px;">
+                <button class="confirm-payment-btn" onclick="completePayment()">Xác nhận đã thanh toán</button>
+                <button class="cancel-payment-btn" onclick="cancelPayment()">Hủy thanh toán</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
