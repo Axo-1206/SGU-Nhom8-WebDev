@@ -317,6 +317,188 @@ body {
     display: none;
 }
 
+/* ===== QR Payment Modal ===== */
+.qr-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.qr-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+}
+
+.qr-modal-content {
+    position: relative;
+    z-index: 2;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.qr-modal-content h2 {
+    margin: 0 0 30px 0;
+    font-size: 1.5rem;
+    color: #222;
+}
+
+.qr-modal-content p {
+    margin: 0;
+    color: #666;
+    font-size: 1rem;
+}
+
+.qr-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #999;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.qr-close-btn:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.qr-container {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.qr-image {
+    width: 250px;
+    height: 250px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.countdown-section {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.countdown-section p {
+    margin: 0 0 15px 0;
+    font-size: 0.95rem;
+}
+
+.countdown-timer {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #8b14f9;
+    font-family: 'Courier New', monospace;
+}
+
+#countdown-time {
+    display: inline-block;
+}
+
+.payment-status {
+    margin: 20px 0;
+    font-size: 1rem;
+    color: #666;
+    font-style: italic;
+}
+
+.cancel-payment-btn {
+    background: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.cancel-payment-btn:hover {
+    background: #e0e0e0;
+}
+
+.confirm-payment-btn {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 20px;
+}
+
+.confirm-payment-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .qr-modal-content {
+        padding: 30px 20px;
+        max-width: 95%;
+    }
+
+    .qr-image {
+        width: 200px;
+        height: 200px;
+    }
+
+    .countdown-timer {
+        font-size: 2rem;
+    }
+
+    .qr-modal-content h2 {
+        font-size: 1.2rem;
+    }
+}
+
 .cart-header {
     display: flex;
     justify-content: space-between;
@@ -452,6 +634,251 @@ body {
     margin-bottom: 15px;
     color: #ccc;
 
+/* ===== Orders / Purchase History Modal ===== */
+.orders-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.orders-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 1;
+}
+
+.orders-modal-content {
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    border-radius: 15px;
+    padding: 28px;
+    width: 90%;
+    max-width: 850px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.orders-modal-content h2 { 
+    margin: 0 0 20px 0; 
+    text-align: center;
+    font-size: 1.5rem;
+    color: #222;
+}
+
+.orders-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s ease;
+}
+
+.orders-close-btn:hover {
+    color: #333;
+}
+
+.orders-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 16px; 
+    margin-top: 20px;
+    align-items: center;
+}
+
+.order-card-centered {
+    border: 1px solid #e0e0e0;
+    padding: 28px;
+    border-radius: 12px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.order-card-centered:hover {
+    box-shadow: 0 8px 16px rgba(139, 20, 249, 0.12);
+    border-color: rgba(139, 20, 249, 0.2);
+}
+
+.order-card-header {
+    margin-bottom: 20px;
+}
+
+.order-id {
+    font-weight: 700;
+    color: #333;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.order-thumbnails {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 24px 0;
+    padding: 0;
+}
+
+.order-item-thumbnail {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-item-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    margin: 20px 0;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.stat-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 30px;
+    background: #e0e0e0;
+}
+
+.order-details-link {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: #8b14f9;
+    font-weight: 500;
+}
+
+.empty-orders { 
+    text-align: center; 
+    color: #999; 
+    padding: 40px 20px; 
+    font-style: italic;
+}
+
+/* Order Details Modal (Book Details) */
+.order-details-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.order-details-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1999;
+}
+
+.order-details-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    animation: slideUp 0.3s ease;
+}
+
+.order-details-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 28px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #999;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.order-details-close-btn:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.order-details-content h2 {
+    margin: 0 0 24px 0;
+    font-size: 1.4rem;
+    color: #333;
+    font-weight: 700;
+}
+
+.book-qty strong,
+.book-price strong {
+    color: #333;
+    font-weight: 700;
+}
     color: #333;
     font-size: 24px;
     font-weight: 600;
@@ -932,6 +1359,138 @@ body {
     -moz-appearance: textfield;
 }
 
+/* Responsive: Orders modal on mobile */
+@media (max-width: 768px) {
+    .orders-modal-content {
+        width: 95%;
+        max-width: 100%;
+        padding: 20px;
+        max-height: 90vh;
+    }
+    
+    .orders-modal-content h2 {
+        font-size: 1.2rem;
+    }
+    
+    .order-card-centered {
+        padding: 20px;
+        max-width: 100%;
+    }
+    
+    .order-thumbnails {
+        gap: 10px;
+    }
+    
+    .order-stats {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .stat-divider {
+        display: none;
+    }
+    
+    .stat-item {
+        width: 100%;
+    }
+    
+    .order-details-content {
+        width: 98%;
+        padding: 20px;
+    }
+    
+    .order-details-content h2 {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+    }
+    
+    .order-books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+    }
+    
+    .book-cover {
+        height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .orders-modal-content {
+        width: 98%;
+        padding: 16px;
+    }
+    
+    .orders-modal-content h2 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .order-card-centered {
+        padding: 16px;
+        max-width: 100%;
+    }
+    
+    .order-id {
+        font-size: 0.85rem;
+    }
+    
+    .order-item-thumbnail {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .order-stats {
+        font-size: 0.9rem;
+        padding: 16px 0;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    .stat-value {
+        font-size: 0.85rem;
+    }
+    
+    .order-details-link {
+        font-size: 0.8rem;
+    }
+    
+    .order-details-content {
+        width: 100%;
+        padding: 16px;
+    }
+    
+    .order-details-content h2 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .order-books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+    }
+    
+    .book-cover {
+        height: 100px;
+    }
+    
+    .book-info {
+        padding: 12px;
+    }
+    
+    .book-name {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+    
+    .book-qty,
+    .book-price {
+        font-size: 0.75rem;
+        margin-bottom: 4px;
+    }
+}
+
 #quantity::-webkit-outer-spin-button,
 #quantity::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -940,8 +1499,6 @@ body {
 
 /* Nút Thêm vào giỏ hàng */
 /*productDetail.css*/
-
-/* ... (các quy tắc khác) ... */
 
 .add-to-cart-btn {
     /* Các thuộc tính hiện có */
@@ -962,8 +1519,6 @@ body {
    
     margin-right: 70px; /* Đảm bảo không có margin tự động đẩy sang phải */
 }
-
-/* ... (các quy tắc khác) ... */
 
 .add-to-cart-btn:hover {
     background: #2980b9;
