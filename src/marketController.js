@@ -334,7 +334,7 @@ function createOrderAndClearCart(paymentMethod) {
     return true; // Báo thành công
 }
 
-// HÀM MỚI: Xử lý thanh toán QR (Như cũ)
+// HÀM MỚI: Xử lý thanh toán QR 
 window.processQRCheckout = function() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     if (cart.length === 0) {
@@ -366,7 +366,7 @@ window.processCashCheckout = function() {
     }
 };
 
-// ***** BẮT ĐẦU SỬA: HÀM COMPLETEPAYMENT *****
+// HÀM COMPLETEPAYMENT 
 window.completePayment = function() {
     const qrModal = document.getElementById('qrModal');
     const statusEl = document.getElementById('paymentStatus');
@@ -376,7 +376,7 @@ window.completePayment = function() {
         // Lấy giỏ hàng
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         
-        // SỬA: Lấy thông tin người dùng hiện tại
+        // Lấy thông tin người dùng hiện tại
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
         if (cart.length > 0) {
@@ -395,16 +395,16 @@ window.completePayment = function() {
                 date: new Date().toISOString(),
                 items: cart,
                 total: totalK + 'k',
-                // SỬA: Thêm thông tin người đặt hàng
+                // Thêm thông tin người đặt hàng
                 user: {
                     username: currentUser ? currentUser.username : 'Guest',
                     email: currentUser ? currentUser.email : 'N/A',
                     address: currentUser ? currentUser.address: 'N/A'
                 },
-                status: 'Đang xử lý' // <-- THÊM TRẠNG THÁI MẶC ĐỊNH
+                status: 'Đang xử lý' // THÊM TRẠNG THÁI MẶC ĐỊNH
             };
 
-            // 1. Lưu vào lịch sử CÁ NHÂN của người dùng (như cũ)
+            // 1. Lưu vào lịch sử CÁ NHÂN của người dùng  
             const userOrders = JSON.parse(localStorage.getItem('orders') || '[]');
             userOrders.unshift(order); // newest first
             localStorage.setItem('orders', JSON.stringify(userOrders));
@@ -418,15 +418,15 @@ window.completePayment = function() {
         console.error('Error saving order:', e);
     }
 
-    // Xóa giỏ hàng (như cũ)
+    // Xóa giỏ hàng  
     localStorage.setItem('cart', '[]');
     
-    // Cập nhật badge (như cũ)
+    // Cập nhật badge  
     if (window.updateCartBadge) {
         window.updateCartBadge();
     }
     
-    // Hiển thị thông báo (như cũ)
+    // Hiển thị thông báo  
     statusEl.textContent = 'Thanh toán thành công! Cảm ơn bạn đã mua hàng.';
     statusEl.style.color = '#27ae60';
     
@@ -435,14 +435,14 @@ window.completePayment = function() {
     
     document.querySelector('.cancel-payment-btn').textContent = 'Đóng';
     
-    // Tải lại lịch sử nếu đang mở (như cũ)
+    // Tải lại lịch sử nếu đang mở  
     setTimeout(() => {
         if (qrModal) qrModal.style.display = 'none';
         const ordersModal = document.getElementById('ordersModal');
         if (ordersModal && ordersModal.style.display === 'flex') renderPurchaseHistory();
     }, 3000);
 };
-// ***** KẾT THÚC SỬA: HÀM COMPLETEPAYMENT *****
+//HÀM COMPLETEPAYMENT
 
 // ===== Purchase history UI =====
 function formatDate(iso) {
@@ -475,7 +475,7 @@ window.showOrderDetails = function(orderId) {
   const booksHtml = (order.items || []).map(item => `
     <div class="book-card-large">
       <div class="book-cover">
-<img src="${item.image || '../assets/images/nhom.png'}" alt="${item.name}" onerror="this.src='../assets/images/nhom.png'" />
+      <img src="${item.image || '../assets/images/nhom.png'}" alt="${item.name}" onerror="this.src='../assets/images/nhom.png'" />
       </div>
       <div class="book-info">
         <div class="book-name">${item.name}</div>
@@ -517,8 +517,6 @@ function renderPurchaseHistory() {
             
 
             const rawDate = o.date ? o.date.split('T')[0] : 'N/A';
-
-
 
             let statusText;
             let statusClass;
@@ -1151,7 +1149,6 @@ let currentPage = 1;
 const dataString = localStorage.getItem("adminProducts");
 const marketItems = dataString ? JSON.parse(dataString) : market;
 
-// (Hàm createItemElement đã bị xóa vì nó không được gọi ở đâu)
 
 // Hiện thị item trong item-container
 function renderMarketItems(page = 1) {
@@ -1275,7 +1272,6 @@ function renderCategoryBar() {
 	});
 }
 
-// (ĐÃ XÓA CÁC HÀM LIÊN QUAN ĐẾN GHI ĐÈ DỮ LIỆU)
 
 // Tìm kiếm theo giá
 const minPriceInput = document.getElementById("minPriceBar");
@@ -1477,7 +1473,7 @@ if (historyBtn) {
 // ===== SETTINGS MODAL FUNCTIONS =====
 
 
-// ===== XỬ LÝ MỞ POPUP TỪ HOME PAGE (Code gốc) =====
+// ===== XỬ LÝ MỞ POPUP TỪ HOME PAGE =====
 // (Chúng ta di chuyển code này xuống đây để nó chạy cùng cụm)
 const urlParams = new URLSearchParams(window.location.search);
 const productName = urlParams.get('product');
