@@ -78,7 +78,7 @@ window.updateCartDisplay = function() {
         const itemK = parseInt(String(item.price).replace(/[^\d]/g, ''), 10) || 0;
         totalK += itemK * item.quantity;
 
-        // ===== BẮT ĐẦU SỬA: Thêm Nút Tăng/Giảm Số Lượng =====
+
         return `
           <div class="cart-item">
             <img src="${item.image}" alt="${item.name}" class="cart-item-image">
@@ -97,7 +97,7 @@ window.updateCartDisplay = function() {
             </button>
           </div>
         `;
-        // ===== KẾT THÚC SỬA =====
+
 
     }).join('');
 
@@ -121,7 +121,7 @@ window.removeFromCart = function(index) {
     }
 };
 
-// ===== BẮT ĐẦU THÊM MỚI: Hàm cập nhật số lượng =====
+
 
 /**
  * Hàm tăng số lượng của item trong giỏ hàng
@@ -130,7 +130,7 @@ window.removeFromCart = function(index) {
 window.increaseCartItem = function(index) {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     if (cart[index]) {
-        // Bạn có thể thêm logic kiểm tra số lượng tồn kho (quantity) ở đây nếu muốn
+
         cart[index].quantity += 1;
         localStorage.setItem('cart', JSON.stringify(cart));
         
@@ -162,7 +162,7 @@ window.decreaseCartItem = function(index) {
     }
 };
 
-// ===== KẾT THÚC THÊM MỚI =====
+
 
 // ===== QR Payment Modal Functions =====
 let countdownInterval = null;
@@ -276,15 +276,94 @@ window.cancelPayment = function() {
 };
 
 // Hàm xử lý thanh toán
-window.processCheckout = function() {
+function createOrderAndClearCart(paymentMethod) {
+    try {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+        if (cart.length > 0) {
+            const totalK = cart.reduce((sum, it) => {
+                const v = parseInt(String(it.price).replace(/[^\d]/g, ''), 10) || 0;
+                return sum + v * (it.quantity || 1);
+            }, 0);
+
+            const allOrdersList = JSON.parse(localStorage.getItem('all_orders') || '[]');
+            const newOrderId = `DH-${allOrdersList.length + 1}`;
+
+            const order = {
+                id: newOrderId,
+                date: new Date().toISOString(),
+                items: cart,
+                total: totalK + 'k',
+                user: {
+                    username: currentUser ? currentUser.username : 'Guest',
+                    email: currentUser ? currentUser.email : 'N/A',
+                    address: currentUser ? currentUser.address: 'N/A'
+                },
+                status: 'Chờ xử lý', // Đổi thành 'Chờ xử lý' cho khớp với admin.js
+                paymentMethod: paymentMethod // Thêm phương thức thanh toán
+            };
+
+            // 1. Lưu vào lịch sử CÁ NHÂN
+            const userOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+            userOrders.unshift(order);
+            localStorage.setItem('orders', JSON.stringify(userOrders));
+
+            // 2. Lưu vào "kho" TRUNG TÂM cho Admin
+            const allOrders = JSON.parse(localStorage.getItem('all_orders') || '[]');
+            allOrders.unshift(order);
+            localStorage.setItem('all_orders', JSON.stringify(allOrders));
+        }
+    } catch (e) {
+        console.error('Error saving order:', e);
+        return false; // Báo lỗi
+    }
+
+    // Xóa giỏ hàng
+    localStorage.setItem('cart', '[]');
+
+    // Cập nhật badge
+    if (window.updateCartBadge) {
+        window.updateCartBadge();
+    }
+
+    // Tải lại lịch sử nếu đang mở
+    const ordersModal = document.getElementById('ordersModal');
+    if (ordersModal && ordersModal.style.display === 'flex') renderPurchaseHistory();
+
+    return true; // Báo thành công
+}
+
+// HÀM MỚI: Xử lý thanh toán QR (Như cũ)
+window.processQRCheckout = function() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
     if (cart.length === 0) {
         alert('Giỏ hàng của bạn đang trống!');
         return;
     }
-    
+    // Mở modal QR như cũ
     showQRModal();
+};
+
+// HÀM MỚI: Xử lý thanh toán Tiền Mặt
+window.processCashCheckout = function() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (cart.length === 0) {
+        alert('Giỏ hàng của bạn đang trống!');
+        return;
+    }
+
+    // Gọi hàm nội bộ để tạo đơn hàng
+    const success = createOrderAndClearCart("Tiền mặt");
+
+    if (success) {
+        // Đóng giỏ hàng
+        if (window.closeCart) window.closeCart();
+        // Hiển thị thông báo theo yêu cầu
+        alert('Đặt hàng thành công! Bạn sẽ thanh toán khi nhận hàng.');
+    } else {
+        alert('Lỗi! Không thể đặt hàng. Vui lòng thử lại.');
+    }
 };
 
 // ***** BẮT ĐẦU SỬA: HÀM COMPLETEPAYMENT *****

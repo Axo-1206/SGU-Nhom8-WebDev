@@ -228,10 +228,14 @@
                 <span class="total-label">Tổng tiền: </span>
                 <span id="total-amount">0k</span>
             </div>
-            <button id="checkout-btn" onclick="processCheckout()">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Thanh toán</span>
-            </button>
+           <div class="checkout-options">
+                <button id="cash-checkout-btn" class="checkout-btn-base" onclick="processCashCheckout()">
+                    <span>Thanh toán tiền mặt</span>
+                </button>
+                <button id="qr-checkout-btn" class="checkout-btn-base" onclick="processQRCheckout()">
+                    <span>Quét mã QR</span>
+                </button>
+            </div>
         </div>
         </div>
 

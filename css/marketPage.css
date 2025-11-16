@@ -19,9 +19,13 @@ body {
 	text-decoration: none;
     color: rgb(241, 247, 246);
 	background-color: rgb(3, 98, 76);
+    padding: 1em 2em;
+    transition: background-color 150ms ease;
 	justify-content: center;
     align-items: center;
     cursor: pointer;
+    border: none;
+
 }
 .cart-navbar-btn:hover{
     background-color:rgb(2, 76, 64);
@@ -619,20 +623,37 @@ body {
     color: #333;
 }
 
-#checkout-btn {
-    background: #28a745;
+
+.checkout-options {
+    display: flex;
+    gap: 10px; /* Khoảng cách giữa 2 nút */
+}
+
+.checkout-btn-base {
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 15px; 
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem; 
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: background-color 0.2s;
 }
 
-#checkout-btn:hover {
+#cash-checkout-btn {
+    background: #007bff;
+}
+#cash-checkout-btn:hover {
+    background: #0056b3;
+}
+
+#qr-checkout-btn {
+    background: #28a745;
+}
+#qr-checkout-btn:hover {
     background: #218838;
 }
 

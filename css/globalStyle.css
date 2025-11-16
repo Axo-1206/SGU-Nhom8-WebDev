@@ -46,7 +46,7 @@ nav .home-li{
 nav li{
   	display: flex;
 }
-nav a{
+nav a,.cart-navbar-btn{
 	display: flex;
 	text-decoration: none;
 	color: var(--navbar-text-color);

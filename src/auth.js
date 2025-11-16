@@ -31,35 +31,9 @@ function toggleForm(form) {
     signinBtn.style.display = "none";
   }
 }
-//tài khoản mặc định
-function generateDefaultUsers(count) {
-    const defaultUsers = [];
-    // Thêm tài khoản user mặc định ban đầu
-    defaultUsers.push({ 
-        username: "user", 
-        password: "123456", 
-        email: "user@gmail.com", 
-        active: true,
-        name: "Người dùng Mặc Định",
-        address: "456 Đường Demo, Quận 1, TP.HCM"
-    });
-    
-    // Tạo 20 tài khoản testuser1 đến testuser20
-    for (let i = 1; i <= count; i++) {
-        defaultUsers.push({
-            username: `testuser${i}`,
-            password: "123456",
-            email: `testuser${i}@unishelf.com`,
-            active: true,
-            name: `Khách hàng ${i}`,
-            address: `123 Đường Thử Nghiệm, Quận ${Math.ceil(i/5)}, TP.HCM`
-        });
-    }
-    return defaultUsers;
-}
 
 // tài khoản mặc định
-const accountsList = JSON.parse(localStorage.getItem("users")) || generateDefaultUsers(20);
+const accountsList = JSON.parse(localStorage.getItem("users"));
 
 
 let needsSave = false;
