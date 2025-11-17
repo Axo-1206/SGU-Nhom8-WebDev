@@ -12,7 +12,6 @@
     padding-top: 20px;
 }
 
-/* Nội dung văn bản - FIXED */
 .welcome-content {
     position: relative;
     z-index: 2;
@@ -714,114 +713,5 @@
 
     .member-id {
         font-size: 0.9rem;
-    }
-}
-
-/* ===== FOOTER STYLES ===== */
-.main-footer {
-    background-color: #034b3e; 
-    color: #ccf8c8;
-    padding-top: 50px;
-    font-size: 0.95rem;
-    width: 100%;
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px 40px 20px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(204, 248, 200, 0.2);
-}
-
-.footer-column {
-    width: calc(33.333% - 20px);
-    min-width: 200px;
-    margin-bottom: 30px;
-}
-
-.footer-column h3, .footer-column h4 {
-    color: #0bc9ad;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-.footer-column ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.footer-column li {
-    margin-bottom: 8px;
-}
-
-.footer-column a {
-    color: #ccf8c8;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.footer-column a:hover {
-    color: #fff;
-}
-
-.social-links a {
-    display: inline-block;
-    color: #ccf8c8;
-    font-size: 1.5rem;
-    margin-right: 15px;
-    transition: color 0.2s;
-}
-
-.social-links a:hover {
-    color: #0bc9ad;
-}
-
-.footer-bottom {
-    text-align: center;
-    padding: 15px 20px;
-    background-color: #02362c;
-    font-size: 0.85rem;
-    color: #a0c4a0;
-}
-
-/* Footer Responsive */
-@media (max-width: 768px) {
-    .main-footer {
-        padding-top: 30px;
-    }
-
-    .footer-container {
-        flex-direction: column;
-        padding-bottom: 20px;
-    }
-    
-    .footer-column {
-        width: 100%;
-        min-width: unset;
-        margin-bottom: 20px;
-    }
-    
-    .footer-column:last-child {
-        margin-bottom: 0;
-    }
-}
-
-@media (max-width: 500px) {
-    .footer-column h3,
-    .footer-column h4 {
-        font-size: 1.2rem;
-    }
-
-    .footer-column {
-        font-size: 0.9rem;
-    }
-
-    .social-links a {
-        font-size: 1.3rem;
-        margin-right: 12px;
     }
 }

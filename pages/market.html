@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Market</title>
     <link rel="stylesheet" href="../css/globalStyle.css">
-    <link rel="icon" type="image/x-icon" href="../assets/icons/jokerBentre.jpg">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../assets/images/logo.png">
     <link rel="stylesheet" href="../css/marketPage.css">
     <script src="../src/navbar.js" defer></script>
     <script type="module" src="../src/marketController.js" defer></script>
@@ -41,10 +40,8 @@
         <!-- Home -->
         <li class="home-li">
             <a href="../index.html">
-                <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
-                    <path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
-                </svg>
-                Home
+                <img src="../assets/images/logo.png" alt="UNISHELF Logo" class="navbar-logo">
+                <h1 id="logo-name">UNISHELF</h1>
             </a>
         </li>
 
@@ -215,7 +212,7 @@
                 <h1>Giỏ hàng của bạn</h1>
             </div>
             <button class="cart-close-btn" onclick="closeCart()">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times">×</i>
             </button>
         </div>
         
@@ -285,6 +282,42 @@
             </div>
     </div>
 </div>
+
+    <footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>UNISHELF</h3>
+            <p>Nền tảng trao đổi và mua bán giáo trình đại học.</p>
+            <p>Email: support@unishelf.edu.com</p>
+            <p>Hotline: 0797485654 </p>
+        </div>
+
+        <div class="footer-column">
+            <h4>Liên kết nhanh</h4>
+            <ul>
+                <li><a href="pages/market.html">Marketplace</a></li>
+                <li><a href="#team">Về chúng tôi</a></li>
+                <li><a href="#">Chính sách bảo mật</a></li>
+                <li><a href="#">Điều khoản sử dụng</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h4>Theo dõi chúng tôi</h4>
+            <div class="social-links">
+                <ul>
+                <li><a href="#" class="facebook">Facebook </a></li>
+                <li><a href="#" class="instagram">Instagram</a></li>
+                <li><a href="#" class="tiktok">Tiktok</a></li>
+                <li><a href="#" class="zalo">Zalo</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 UNISHELF. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

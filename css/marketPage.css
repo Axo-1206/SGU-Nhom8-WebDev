@@ -191,23 +191,26 @@ body {
 
 /* 🌟 Phân trang */
 .pagination {
-    position: fixed;
-    bottom: 25px;
+    position: sticky;
+    bottom: 30px; /* Khoảng cách từ đáy màn hình */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
+    justify-content: center;
     gap: 12px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.35);
     backdrop-filter: blur(8px);
-    padding: 10px 25px;
+    padding: 12px 30px;
     border-radius: 40px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    z-index: 100; /* Giảm z-index để không đè lên modal */
+    width: fit-content;
+    margin: 0 auto 30px auto; /* Thêm margin bottom để không sát footer */
 }
 
 .page-btn {
     border: none;
-    background: #8b14f9;
+    background: #4fdada;
     color: white;
     border-radius: 20px;
     padding: 8px 16px;
@@ -218,7 +221,7 @@ body {
 }
 
 .page-btn:hover {
-    background: #6a0dc8;
+    background: #293ce7;
     transform: scale(1.1);
 }
 
@@ -229,7 +232,7 @@ body {
 }
 
 .page-btn:disabled {
-    background: #ccc;
+    background: #000000;
     cursor: not-allowed;
 }
 

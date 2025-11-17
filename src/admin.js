@@ -1459,7 +1459,6 @@ function renderOrdersTable(page = 1) {
         renderOrdersTable(newPage);
     });
 }
-// *** KẾT THÚC THAY ĐỔI ***
 
 
 // Mở Modal Xem Chi Tiết Đơn Hàng
@@ -1511,12 +1510,6 @@ function closeViewOrderModal() {
 
 // Gắn sự kiện cho modal mới
 document.addEventListener('click', (e) => {
-    // Nút xem chi tiết đơn hàng (BỊ XÓA, GIỜ DÙNG DROPDOWN)
-    // const viewBtn = e.target.closest(".order-view-btn");
-    // if (viewBtn) {
-    //     openViewOrderModal(viewBtn.dataset.id);
-    //     return;
-    // }
 
     // Nút đóng modal
     const closeBtn = document.getElementById("close-view-order-btn-footer");
@@ -1534,7 +1527,6 @@ document.addEventListener('click', (e) => {
 });
 
 // Ẩn tab orders ban đầu
-// (Đoạn này bị lặp, đã có trong hàm setActiveTab)
 // if (orderPanel) orderPanel.style.display = "none"; 
 renderCategorySelector();
 

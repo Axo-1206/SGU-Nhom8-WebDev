@@ -1,26 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Goudy+Bookletter+1911&display=swap');
+
 /* ===== Account Dropdown Styles ===== */
-.account-link {
+/* Account Li container needs position relative for dropdown */
+#accountLi {
+    position: relative;
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    user-select: none;
+    align-items: stretch;
 }
 
 /* Dropdown container */
 .dropdown-menu {
     display: none;
+    height:fit-content;
     position: absolute;
     top: 100%;
     right: 0;
     list-style: none;
     padding: 0;
-    margin: 0.5rem 0 0 0;
-    background: white;
-    border-radius: 5px;
+    margin: 0;
+    background: rgb(3, 98, 76);
+    border-radius: 0 0 8px 8px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 999;
+    min-width: 250px;
 }
 
 .dropdown-menu.show {
@@ -30,76 +33,81 @@
 /* Header inside dropdown */
 .dropdown-header {
     padding: 1rem;
-    background: #f5f5f5;
-    border-bottom: 1px solid #e0e0e0;
+    background: rgb(2, 76, 64);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dropdown-header .user-name {
-    font-weight: bold;
-    color: #333;
+    font-weight: 600;
+    color: #ffffff;
     margin-bottom: 0.25rem;
+    font-size: 1rem;
 }
 
 .dropdown-header .user-email {
-    font-size: 0.85em;
-    color: #666;
+    font-size: 0.85rem;
+    color: #ccf8c8;
 }
 
 /* Dropdown links */
+.dropdown-menu li {
+    display: block;
+}
+
 .dropdown-menu li a {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.8rem 1rem;
-    color: #333;
+    color: #ffffff;
     text-decoration: none;
     transition: background 0.2s;
+    font-size: 1rem;
+    height: auto !important;
+}
+
+.dropdown-menu svg {
+    height: 20px;
+    width: 20px;
+    vertical-align: middle;
+    fill: currentColor;
 }
 
 .dropdown-menu li a:hover {
-    background: #f5f5f5;
+    background: rgb(2, 76, 64);
 }
 
 .dropdown-divider {
     height: 1px;
-    background: #e0e0e0;
+    background: rgba(255, 255, 255, 0.1);
     margin: 0.5rem 0;
 }
 
 /* Logout link color */
 .logout-link {
-    color: #e74c3c !important;
+    color: #ff6b6b !important;
 }
 
-/* ===== Navbar Reset when Logged Out ===== */
-#accountLi {
-    position: relative;
-}
-
-#loginLi {
-    display: flex;
-    align-items: center;
-}
-
-.logged-out #accountLi {
-    display: none;
-}
-
-.logged-in #loginLi {
-    display: none;
-}
-
-.logged-in #accountLi {
-    display: block;
+.logout-link:hover {
+    background: rgba(255, 107, 107, 0.1) !important;
 }
 
 /* ===== Responsive styles for mobile sidebar ===== */
-@media (width < 700px) {
+@media (max-width: 700px) {
+    #accountLi {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
     #accountLi .dropdown-menu {
         position: static;
         box-shadow: none;
+        margin: 0;
         margin-left: 1rem;
         border-left: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0;
+        background: rgba(0, 0, 0, 0.2);
+        min-width: unset;
     }
 
     #accountLi .dropdown-menu.show {
@@ -113,7 +121,8 @@
     }
 
     .dropdown-menu li a {
-        padding: 0.6rem 1rem;
+        padding: 0.6rem 1rem !important;
+        font-size: 0.95rem;
     }
 }
 /* Thêm vào cuối file navbar.css */

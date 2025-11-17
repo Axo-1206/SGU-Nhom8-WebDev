@@ -7,7 +7,7 @@
 	<title>Home</title>
 	<link rel="stylesheet" href="css/globalStyle.css">
     <link rel="stylesheet" href="css/index.css">
-	<link rel="icon" type="image/x-icon" href="assets/icons/rickRoll.png">
+	<link rel="icon" type="image/x-icon" href="assets/images/logo.png">
 	<script src="src/navbar.js" defer></script>
 	<link rel="stylesheet" href="css/navbar.css">
     <script type="module" src="src/homeMarket.js" defer></script>
@@ -41,11 +41,9 @@
 
         <!-- Home -->
         <li class="home-li">
-            <a href="../index.html">
-                <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
-                    <path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
-                </svg>
-                Home
+            <a href="index.html">
+                <img src="../assets/images/logo.png" alt="UNISHELF Logo" class="navbar-logo">
+                <h1 id="logo-name">UNISHELF</h1>
             </a>
         </li>
 
@@ -226,7 +224,7 @@
 			<img id="viewerImage" src="" alt="Full view">
 		</div>
 	</div>
-    <footer class="main-footer">
+<footer class="main-footer">
     <div class="footer-container">
         <div class="footer-column">
             <h3>UNISHELF</h3>
@@ -248,8 +246,12 @@
         <div class="footer-column">
             <h4>Theo dõi chúng tôi</h4>
             <div class="social-links">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
+                <ul>
+                <li><a href="#" class="facebook">Facebook </a></li>
+                <li><a href="#" class="instagram">Instagram</a></li>
+                <li><a href="#" class="tiktok">Tiktok</a></li>
+                <li><a href="#" class="zalo">Zalo</a></li>
+                </ul>
             </div>
         </div>
     </div>
@@ -267,6 +269,7 @@
     </div>
 </div>
 </footer>
+
 </body>
 
 </html>
