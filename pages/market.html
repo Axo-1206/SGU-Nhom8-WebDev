@@ -123,31 +123,17 @@
 
 <div id="overlay" onclick="closeSidebar()" aria-hidden="true"></div>
 
-<div class="market-layout">
-        <div class="left-side-bar">
-            <div class="filter-bars">
-
-                <form class="search-bar" action="">
-                    <input type="text" id="searchInput" placeholder="Search..">
-                </form>
-
-                <form class="min-price-bar" action="">
-                    <input type="text" id="minPriceBar" placeholder="min price ...">
-                </form>
-
-                <form class="max-price-bar" action="">
-                    <input type="text" id="maxPriceBar" placeholder="max price ...">
-                </form>
-
-                <form class="release-year-bar" action="">
-                    <input type="text" id="releaseYearBar" placeholder="release year ...">
-                </form>
-                
-            </div>
-            <div class="category-bar" id="categoryBar"></div>
+    <div class="market-layout">
+        <div class="search-options-container">
+            <button class="filter-button">
+                <svg fill="#000000" width="80%" height="80%" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12,25l6.67,6.67a1,1,0,0,0,.7.29.91.91,0,0,0,.39-.08,1,1,0,0,0,.61-.92V13.08L31.71,1.71A1,1,0,0,0,31.92.62,1,1,0,0,0,31,0H1A1,1,0,0,0,.08.62,1,1,0,0,0,.29,1.71L11.67,13.08V24.33A1,1,0,0,0,12,25ZM3.41,2H28.59l-10,10a1,1,0,0,0-.3.71V28.59l-4.66-4.67V12.67a1,1,0,0,0-.3-.71Z"/>
+                </svg>
+            </button>
+            <form class="search-bar" action="">
+                <input type="text" id="searchInput" placeholder="Search..">
+            </form>
         </div>
-        
-
         <div class="market-content">
             <div class="item-container-wraper">
                 <div class="item-container"></div>
@@ -156,6 +142,38 @@
         </div>
     </div>
 
+    <!-- Filter Panel -->
+    <div id="filter-panel" class="filter-panel" style="display: none">
+        <div class="fiter-option">
+            <label for="minPrice">Giá tối thiểu:</label>
+            <input type="number" id="minPrice" placeholder="Min pirce" style="width: 100%;">
+        </div>
+
+        <div class="fiter-option">
+            <label for="maxPrice">Giá tối đa:</label>
+            <input type="number" id="maxPrice" placeholder="Max price" style="width: 100%;">
+        </div>
+
+        <div class="fiter-option">
+            <label for="releaseYear">Năm phát hành:</label>
+            <input type="number" id="releaseYear" placeholder="Release year" style="width: 100%;">
+        </div>
+
+        <div class="fiter-option">
+            <label for="searchQuery">Name</label>
+            <input type="text" id="searchQuery" placeholder="Name" style="width: 100%;">
+        </div>
+
+        <div class="filter-option">
+            <label for="selectedCategory" id="filter-category">Danh mục:</label>
+            <select id="selectedCategory" style="width: 100%;">
+                <option value="">-- Chọn danh mục --</option>
+                <!-- Options will be injected by JavaScript -->
+            </select>
+        </div>
+
+        <button class="apply-filter-button" id="apply-filter-button">Áp dụng bộ lọc</button>
+    </div>
 
 
     <div class="product-container"  id="productDetail">
@@ -205,20 +223,24 @@
         <div class="cart-items">
             </div>
         
-        <div class="cart-summary">
-            <div class="cart-total">
-                <span class="total-label">Tổng tiền: </span>
-                <span id="total-amount">0k</span>
-            </div>
-           <div class="checkout-options">
-                <button id="cash-checkout-btn" class="checkout-btn-base" onclick="processCashCheckout()">
-                    <span>Thanh toán tiền mặt</span>
-                </button>
-                <button id="qr-checkout-btn" class="checkout-btn-base" onclick="processQRCheckout()">
-                    <span>Quét mã QR</span>
-                </button>
-            </div>
+       <div class="cart-summary">
+        <div class="cart-total">
+            <span class="total-label">Tổng tiền:</span>
+            <span id="total-amount">0k</span>
         </div>
+
+        <div class="cart-buttons">
+            <button id="checkout-btn" onclick="processCheckout()">
+                <i class="fas fa-qrcode"></i>
+                <span>Thanh toán bằng QR</span>
+            </button>
+
+            <button class="cash-payment-btn" onclick="processCashPayment()">
+                <i class="fas fa-money-bill-wave"></i>
+                Thanh toán khi nhận hàng
+            </button>
+        </div>
+    </div>
         </div>
 
     <div class="qr-modal" id="qrModal" style="display: none;">
@@ -307,6 +329,10 @@
                     <input type="password" id="accountPasswordConfirm" placeholder="Nhập lại mật khẩu mới">
                 </div>
                 
+                  <div class="form-group">
+                    <label for="address">Nhập địa chỉ:</label>
+                    <input type="text" id="accountPasswordConfirm" placeholder="Địa chỉ">
+                </div>
                 <p id="accountMsg" class="account-modal-msg"></p>
 
             </div>

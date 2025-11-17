@@ -1,19 +1,77 @@
-/* 🌈 Giao diện tổng thể */
-body {
-    margin: 0;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
+
+
+.filter-button {
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.4);
+    margin: 20px 5px 20px 30px;
+    border-radius: 10%;
+    aspect-ratio: 1;
+    width: 10vh;
 }
 
-.search-bar, .min-price-bar, .max-price-barm, .release-year-bar {
+.apply-filter-button {
+    margin-top: 10px;
+    width: 100%; 
+    background: #15b5a5; 
+    color: white; 
+    padding: 8px; 
+    border: none; 
+    border-radius: 4px;
+}
+
+.fiter-option input {
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    border-radius: 10%;
+}
+
+.fiter-option label {
+    color: black;
+}
+
+.filter-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 30px 20px 30px 20px;
+    z-index: 9999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    width: 300px;
+
+    display: none;
+}
+
+.search-bar {
+    align-self: center;
+    margin-top: 10px;
     padding: 20px;
 }
-
-.filter-bars {
-    display: flex;
-    align-items: center;
-    align-self: center;
+#searchInput {
+    display: block;
+    width: 300px;
+    height: 50px;
+    padding: 10px;
+    border-radius: 30px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    margin: 0 auto 12px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.03);
 }
+.search-options-container {
+    display: flex;
+    flex-direction: row;
+}
+
 .cart-navbar-btn{
     display: flex;
 	text-decoration: none;
@@ -32,49 +90,6 @@ body {
 }
 .cart-badge{
     margin: 10px;
-}
-/* 🔍 Thanh danh mục + Tìm kiếm */
-.category-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-    padding: 16px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(8px);
-    border-bottom: 3px solid rgba(255, 255, 255, 0.2);
-}
-
-/* 🎯 Ô tìm kiếm */
-#searchInput, #minPriceBar, #maxPriceBar, #releaseYearBar {
-    display: block;
-    width: 320px;
-    padding: 10px;
-    border-radius: 30px;
-    border: none;
-    outline: none;
-    font-size: 1rem;
-    margin: 0 auto 12px;
-    background: rgba(255, 255, 255, 0.9);
-    transition: all 0.3s ease;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-    transform: scale(1.03);
-}
-/* 🧭 Thanh danh mục */
-#categoryBar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 25px;
-    flex-wrap: wrap;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 20px 25px;
-    border-radius: 35px;
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
 }
 
 /* 🎨 Nút danh mục */
@@ -191,6 +206,7 @@ body {
 
 /* 🌟 Phân trang */
 .pagination {
+    align-self: center;
     position: sticky;
     bottom: 30px; /* Khoảng cách từ đáy màn hình */
     left: 50%;
@@ -261,14 +277,11 @@ body {
         flex: 1 1 calc(50% - 24px);
     }
 
-    /* #searchInput {
-        width: 240px;
-    } */
-
     #categoryBar {
         gap: 16px;
         padding: 8px 15px;
     }
+
 }
 
 @media (max-width: 480px) {
@@ -296,10 +309,6 @@ body {
         width: 180px;
     } */
 
-    .pagination {
-        bottom: 10px;
-        padding: 6px 12px;
-    }
 }
 
 
