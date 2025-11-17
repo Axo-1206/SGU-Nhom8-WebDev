@@ -305,7 +305,7 @@
     flex-direction: column;
     gap: 20px;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 100;
 }
 
 .cart-overlay {
@@ -1270,7 +1270,7 @@
 
 /* 🖼️ CỘT ẢNH SẢN PHẨM (BÊN TRÁI) */
 .product-image {
-   width: 300px;
+   width: 250px;
   height: 400px;
 
   /* 2. (Tùy chọn) Thêm viền hoặc nền cho đẹp */

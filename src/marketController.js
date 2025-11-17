@@ -1120,6 +1120,8 @@ function renderPurchaseHistory() {
 // ===== Hien thi noi dung market =====
 let itemsPerPage = 8;
 let currentPage = 1;
+let searchQuery = "";
+
 
 // Tải dữ liệu CHÍNH XÁC MỘT LẦN khi script chạy
 const dataString = localStorage.getItem("adminProducts");
@@ -1131,11 +1133,10 @@ function applyFilters() {
   const minPrice = parseInt(document.getElementById('minPrice').value) || null;
   const maxPrice = parseInt(document.getElementById('maxPrice').value) || null;
   const releaseYear = parseInt(document.getElementById('releaseYear').value) || null;
-  const searchQuery = document.getElementById('searchQuery').value.trim().toLowerCase();
   const selectedCategory = document.getElementById('selectedCategory').value;
 
   const noFilterApplied =
-    !minPrice && !maxPrice && !releaseYear && !searchQuery && !selectedCategory;
+    !minPrice && !maxPrice && !releaseYear && !selectedCategory;
 
   filteredResults = [];
 
@@ -1148,8 +1149,7 @@ function applyFilters() {
       const price = parseInt(item.price);
       const matchesPrice = (!minPrice || price >= minPrice) && (!maxPrice || price <= maxPrice);
       const matchesYear = !releaseYear || item.releaseYear === releaseYear;
-      const matchesQuery = !searchQuery || item.name.toLowerCase().includes(searchQuery);
-      return matchesPrice && matchesYear && matchesQuery;
+      return matchesPrice && matchesYear;
     });
 
     filteredResults.push(...items);
@@ -1163,12 +1163,17 @@ function renderMarketItems(page = 1) {
   if (!container) return;
   
   container.innerHTML = "";
-    
-    // (Đã xóa vòng lặp gán ID và lưu 'marketItems' tại đây)
 
   const start = (page - 1) * itemsPerPage;
 	const end = start + itemsPerPage;
-	const pageItems = filteredResults.slice(start, end); 
+	let pageItems = filteredResults.slice(start, end); 
+
+  pageItems = pageItems.filter(item => {
+        const matchesName = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesActive = item.active !== false; // LỌC BỎ SẢN PHẨM ẨN
+        
+        return matchesActive && matchesName;
+	});
 
 	pageItems.forEach(item => {
 		const itemDiv = document.createElement("div");
@@ -1389,6 +1394,14 @@ if (productName) {
             }, 500);
         }
     }
+}
+
+const searchInput = document.getElementById("searchInput");
+if (searchInput) { 
+	searchInput.addEventListener("input", e => {
+	searchQuery = e.target.value.trim();
+	renderMarketItems(1);
+	});
 }
 
 // Thay đổi các hiện thị khi window bị thay đổi khích thước
