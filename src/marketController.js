@@ -943,6 +943,64 @@ window.completePayment = function() {
         if (ordersModal && ordersModal.style.display === 'flex') renderPurchaseHistory();
     }, 3000);
 };
+//thanh toán bằng tiền mặt
+window.processCashPayment = function () {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (cart.length === 0) {
+        alert('Giỏ hàng đang trống!');
+        return;
+    }
+
+    try {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const totalK = cart.reduce((sum, it) => {
+            const v = parseInt(String(it.price).replace(/[^\d]/g, ''), 10) || 0;
+            return sum + v * (it.quantity || 1);
+        }, 0);
+
+        const allOrdersList = JSON.parse(localStorage.getItem('all_orders') || '[]');
+        const newOrderId = `DH-${allOrdersList.length + 1}`;
+
+        const order = {
+            id: newOrderId,
+            date: new Date().toISOString(),
+            items: cart,
+            total: totalK + "k",
+            user: {
+                username: currentUser ? currentUser.username : "Guest",
+                email: currentUser ? currentUser.email : "N/A",
+                address: currentUser ? currentUser.address : "N/A",
+            },
+            status: "Chờ thanh toán khi nhận hàng"  // ⭐ TRẠNG THÁI KHÁC QR
+        };
+
+        // Lưu cá nhân
+        const userOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        userOrders.unshift(order);
+        localStorage.setItem('orders', JSON.stringify(userOrders));
+
+        // Lưu admin
+        const allOrders = JSON.parse(localStorage.getItem('all_orders') || '[]');
+        allOrders.unshift(order);
+        localStorage.setItem('all_orders', JSON.stringify(allOrders));
+
+        // Xóa giỏ
+        localStorage.setItem('cart', '[]');
+
+        if (window.updateCartBadge) window.updateCartBadge();
+
+        alert("Đặt hàng thành công! Bạn sẽ thanh toán khi nhận hàng.");
+
+        // Nếu đang mở lịch sử thì reload
+        const ordersModal = document.getElementById('ordersModal');
+        if (ordersModal && ordersModal.style.display === 'flex') {
+            renderPurchaseHistory();
+        }
+
+    } catch (err) {
+        console.error("Lỗi thanh toán tiền mặt:", err);
+    }
+};
 // ***** KẾT THÚC SỬA: HÀM COMPLETEPAYMENT *****
 
 // ===== Purchase history UI =====

@@ -622,52 +622,79 @@
 }
 
 .cart-summary {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.cart-total {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 
+.cart-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
 #total-amount {
     font-size: 1.2rem;
     font-weight: bold;
     color: #333;
 }
-
-
-.checkout-options {
-    display: flex;
-    gap: 10px; /* Khoảng cách giữa 2 nút */
-}
-
-.checkout-btn-base {
+/* Nút QR */
+#checkout-btn {
+    flex: 1;
+    background: linear-gradient(to right, #28a745, #34d058);
     color: white;
     border: none;
-    padding: 10px 15px; 
-    border-radius: 4px;
+    padding: 12px 0;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.9rem; 
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 500;
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 8px;
-    transition: background-color 0.2s;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+    transition: 0.3s ease;
 }
 
-#cash-checkout-btn {
-    background: #007bff;
-}
-#cash-checkout-btn:hover {
-    background: #0056b3;
+#checkout-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.35);
 }
 
-#qr-checkout-btn {
-    background: #28a745;
+/* Nút tiền mặt */
+.cash-payment-btn {
+    flex: 1;
+    padding: 12px 0;
+    background: linear-gradient(to right, #004d40, #00695c);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 105, 92, 0.28);
 }
-#qr-checkout-btn:hover {
-    background: #218838;
+
+.cash-payment-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 105, 92, 0.42);
 }
+
+
+
 
 .empty-cart {
     text-align: center;
