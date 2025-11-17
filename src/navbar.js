@@ -412,3 +412,163 @@ function renderPurchaseHistory() {
     // *** KẾT THÚC THAY ĐỔI ***
   }).join('');
 }
+
+
+
+
+
+
+
+// ----- Account Settings Modal Handlers (ĐÃ SỬA LỖI) -----
+function openAccountSettings(event) {
+    if (event) event.preventDefault();
+    const modal = document.getElementById('accountModal');
+    console.log('openAccountSettings called, modal:', modal);
+    if (!modal) {
+        console.error('Modal #accountModal not found!');
+        return;
+    }
+    
+    populateAccountForm();
+    
+    // DÙNG CLASSLIST ĐỂ KÍCH HOẠT CSS VÀ ANIMATION
+    modal.classList.add('show');
+    console.log('Modal show class added');
+}
+
+// THAY THẾ TOÀN BỘ HÀM NÀY
+function closeAccountSettings() {
+    const modal = document.getElementById('accountModal');
+    if (!modal) return;
+    
+    modal.classList.remove('show'); 
+    
+    const msg = document.getElementById('accountMsg');
+    if (msg) msg.textContent = '';
+    
+    // Xóa cả 3 trường mật khẩu
+    const pw_current = document.getElementById('accountCurrentPassword');
+    const pw_new = document.getElementById('accountPassword');
+    const pw_confirm = document.getElementById('accountPasswordConfirm');
+    
+    if (pw_current) pw_current.value = '';
+    if (pw_new) pw_new.value = '';
+    if (pw_confirm) pw_confirm.value = '';
+}
+
+function populateAccountForm() {
+    const saved = localStorage.getItem('currentUser');
+    if (!saved) return;
+    try {
+        const user = JSON.parse(saved);
+        const nameEl = document.getElementById('accountName');
+        const emailEl = document.getElementById('accountEmail');
+        if (nameEl) nameEl.value = user.name || '';
+        if (emailEl) emailEl.value = user.email || '';
+    } catch (e) {
+        console.error('populateAccountForm error', e);
+    }
+}
+
+// THAY THẾ TOÀN BỘ HÀM NÀY
+function handleSaveAccountSettings(event) {
+    event.preventDefault();
+    const name = document.getElementById('accountName').value.trim();
+    const email = document.getElementById('accountEmail').value.trim();
+    
+    // Lấy cả 3 trường mật khẩu
+    const currentPassword = document.getElementById('accountCurrentPassword').value;
+    const newPassword = document.getElementById('accountPassword').value;
+    const passwordConfirm = document.getElementById('accountPasswordConfirm').value;
+    
+    const msg = document.getElementById('accountMsg');
+    if (msg) msg.textContent = ''; // Xóa thông báo cũ
+
+    // --- Validation cơ bản ---
+    if (!name || !email) {
+        if (msg) msg.textContent = 'Vui lòng điền tên và email.';
+        return;
+    }
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(email)) {
+        if (msg) msg.textContent = 'Email không hợp lệ.';
+        return;
+    }
+
+    // --- Validation mật khẩu (NÂNG CẤP) ---
+    // Chỉ validate mật khẩu nếu người dùng nhập vào BẤT KỲ ô nào
+    if (currentPassword || newPassword || passwordConfirm) {
+        
+        // 1. Phải nhập mật khẩu hiện tại
+        if (!currentPassword) {
+            if (msg) msg.textContent = 'Vui lòng nhập mật khẩu hiện tại để đổi.';
+            return;
+        }
+
+        // 2. Kiểm tra mật khẩu hiện tại có đúng không
+        // (Đây là phần GIẢ LẬP, vì ta đang lưu password trong localStorage)
+        if (!currentUser || currentUser.password !== currentPassword) {
+            if (msg) msg.textContent = 'Mật khẩu hiện tại không đúng.';
+            return;
+        }
+
+        // 3. Phải nhập mật khẩu mới
+        if (!newPassword) {
+            if (msg) msg.textContent = 'Vui lòng nhập mật khẩu mới.';
+            return;
+        }
+
+        // 4. Kiểm tra độ dài
+        if (newPassword.length < 6) {
+            if (msg) msg.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+            return;
+        }
+
+        // ----- BẠN YÊU CẦU THÊM Ở ĐÂY -----
+        // 5. Kiểm tra trùng mật khẩu cũ
+        if (newPassword === currentPassword) {
+            if (msg) msg.textContent = 'Mật khẩu mới không được trùng với mật khẩu cũ.';
+            return;
+        }
+        // ----- KẾT THÚC PHẦN THÊM MỚI -----
+
+        // 6. Kiểm tra có khớp không (trước đó là bước 5)
+        if (newPassword !== passwordConfirm) {
+            if (msg) msg.textContent = 'Mật khẩu xác nhận không khớp.';
+            return;
+        }
+    }
+
+    // --- Lưu thông tin ---
+    let user = {};
+    try {
+        user = JSON.parse(localStorage.getItem('currentUser')) || {};
+    } catch (e) {
+        user = {};
+    }
+
+    user.name = name;
+    user.email = email;
+    // Chỉ cập nhật mật khẩu MỚI nếu nó đã được nhập
+    if (newPassword) {
+        user.password = newPassword;
+    }
+
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    currentUser = user; // Cập nhật biến global
+
+    // Cập nhật UI
+    showAccountDropdown(user);
+    if (msg) msg.textContent = 'Đã lưu thay đổi.';
+
+    // Tự động đóng
+    setTimeout(() => closeAccountSettings(), 900);
+}
+
+// expose to global scope
+window.openAccountSettings = openAccountSettings;
+window.closeAccountSettings = closeAccountSettings;
+window.handleSaveAccountSettings = handleSaveAccountSettings;
+window.toggleDropdown = toggleDropdown;
+window.handleLogout = handleLogout;
+window.handleLogin = handleLogin;

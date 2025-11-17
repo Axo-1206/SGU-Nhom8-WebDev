@@ -1,0 +1,210 @@
+/* =================================== */
+/* == CSS CHO MODAL TÀI KHOẢN (MỚI) == */
+/* =================================== */
+
+.account-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: none; 
+    
+    /* ===== 2 DÒNG CĂN GIỮA QUAN TRỌNG ===== */
+    align-items: center;
+    justify-content: center;
+    /* ===================================== */
+    
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Lớp JS thêm vào để bật modal */
+.account-modal-overlay.show {
+    display: flex; /* Phải là 'flex' để 2 dòng trên hoạt động */
+    opacity: 1;
+}
+
+.account-modal-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    cursor: pointer;
+}
+
+.account-modal-content {
+    position: relative;
+    z-index: 1001;
+    background-color: #282a2d; 
+    color: #e3e3e3;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95);
+    transition: transform 0.2s ease-in-out;
+}
+.account-modal-overlay.show .account-modal-content {
+    transform: scale(1);
+}
+
+.account-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #444;
+}
+.account-modal-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+.account-modal-close {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #aaa;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+.account-modal-close:hover { color: #fff; }
+
+.account-modal-body {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #ccc;
+}
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: #e3e3e3;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus {
+    border-color: #0088ff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,136,255,0.25);
+}
+
+/* FIX LỖI AUTOFILL */
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover, 
+.form-group input:-webkit-autofill:focus, 
+.form-group input:-webkit-autofill:active  {
+    -webkit-box-shadow: 0 0 0 30px #333 inset !important;
+    -webkit-text-fill-color: #e3e3e3 !important;
+    caret-color: #e3e3e3;
+    border: 1px solid #555;
+}
+
+
+.form-divider {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 24px 0;
+}
+
+.account-modal-msg {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #00aaff;
+    text-align: center;
+    min-height: 1.2em;
+}
+
+.account-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #444;
+    background-color: #333;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+.btn-secondary {
+    background-color: transparent;
+    color: #ccc;
+    border: 1px solid #6c757d;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+    color: #fff;
+    border-color: #5a6268;
+}
+/* =================================== */
+/* == DÁN 3 KHỐI NÀY VÀO CUỐI FILE CSS == */
+/* =================================== */
+
+/* 1. Biến cái form thành 1 flex column để nó lấp đầy không gian còn lại */
+.account-modal-content > form {
+    display: flex;
+    flex-direction: column;
+    /* Quan trọng: Cho form lấp đầy không gian còn lại (sau cái header) */
+    flex-grow: 1; 
+    overflow: hidden; /* Ngăn footer bị đẩy ra */
+}
+
+/* 2. Sửa lại .account-modal-body */
+.account-modal-body {
+    padding: 24px;
+    overflow-y: auto; /* Chỉ cho phép NỘI DUNG FORM cuộn */
+    
+    /* Quan trọng: Cho nội dung form lấp đầy không gian */
+    flex-grow: 1; 
+}
+
+/* 3. Sửa lại .account-modal-footer */
+.account-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #444;
+    background-color: #333;
+
+    /* Quan trọng: Giữ footer cố định, không bị co lại */
+    flex-shrink: 0; 
+}

@@ -5,30 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Market</title>
     <link rel="stylesheet" href="../css/globalStyle.css">
-    <link rel="icon" type="image/x-icon" href="../assets/images/logo.png">
+    <link rel="icon" type="image/x-icon" href="../assets/icons/jokerBentre.jpg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/marketPage.css">
+    
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/accountModel.css">
+    <link rel="stylesheet" href="../css/cart.css">
+    <link rel="stylesheet" href="../css/productDetail.css">
     <script src="../src/navbar.js" defer></script>
     <script type="module" src="../src/marketController.js" defer></script>
-
     
-</head>
+    <script type="module" src="../src/cart.js"></script>
+    </head>
 <body>
 
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <!-- ===== COPY PHẦN NÀY VÀO TẤT CẢ CÁC TRANG ===== -->
-
-<!-- Nút mở sidebar (mobile) -->
-<button id="open-sidebar-button" onclick="openSidebar()" aria-label="open sidebar" aria-expanded="false" aria-controls="navbar">
+    <button id="open-sidebar-button" onclick="openSidebar()" aria-label="open sidebar" aria-expanded="false" aria-controls="navbar">
     <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#c9c9c9">
         <path d="M165.13-254.62q-10.68 0-17.9-7.26-7.23-7.26-7.23-18t7.23-17.86q7.22-7.13 17.9-7.13h629.74q10.68 0 17.9 7.26 7.23 7.26 7.23 18t-7.23 17.87q-7.22 7.12-17.9 7.12H165.13Zm0-200.25q-10.68 0-17.9-7.27-7.23-7.26-7.23-17.99 0-10.74 7.23-17.87 7.22-7.13 17.9-7.13h629.74q10.68 0 17.9 7.27 7.23 7.26 7.23 17.99 0 10.74-7.23 17.87-7.22 7.13-17.9 7.13H165.13Zm0-200.26q-10.68 0-17.9-7.26-7.23-7.26-7.23-18t7.23-17.87q7.22-7.12 17.9-7.12h629.74q10.68 0 17.9 7.26 7.23 7.26 7.23 18t-7.23 17.86q-7.22 7.13-17.9 7.13H165.13Z"/>
     </svg>
 </button>
 
-<!-- Navbar -->
 <nav id="navbar">
     <ul>
-        <!-- Nút đóng sidebar (mobile) -->
         <li>
             <button id="close-sidebar-button" onclick="closeSidebar()" aria-label="close sidebar">
                 <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#c9c9c9">
@@ -37,7 +38,6 @@
             </button>
         </li>
 
-        <!-- Home -->
         <li class="home-li">
             <a href="../index.html">
                 <img src="../assets/images/logo.png" alt="UNISHELF Logo" class="navbar-logo">
@@ -45,7 +45,6 @@
             </a>
         </li>
 
-        <!-- Market -->
         <li>
             <a href="../pages/market.html">
                 <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
@@ -63,9 +62,6 @@
             <span class="cart-badge" id="cart-badge">0</span>
         </button>
     </li>
-        <!-- ===== PHẦN AUTHENTICATION ===== -->
-        
-        <!-- Nút Login (hiện khi chưa đăng nhập) -->
         <li id="loginLi" style="display: block;">
             <a class="accent-link" href="#" onclick="handleLogin(event)">
                 <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
@@ -75,7 +71,6 @@
             </a>
         </li>
         
-        <!-- Account Dropdown (ẩn mặc định, hiện khi đã đăng nhập) -->
         <li id="accountLi" style="display: none;">
             <a href="#" class="account-link" onclick="toggleDropdown(event)">
                 <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
@@ -85,16 +80,13 @@
                 <span style="font-size: 0.8em;">▼</span>
             </a>
             
-            <!-- Dropdown Menu -->
             <ul class="dropdown-menu" id="dropdownMenu">
-                <!-- Header với thông tin user -->
                 <li class="dropdown-header">
                     <div class="user-name" id="dropdownUserName">User</div>
                     <div class="user-email" id="dropdownUserEmail">user@example.com</div>
                 </li>
                 
-               <!-- Lịch sử mua hàng -->
-                <li>
+               <li>
                     <button class="dropdown-button" id="show-history-btn">
                         <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
                             <path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Z"/>
@@ -103,20 +95,16 @@
                     </button>
                 </li>
 
-                <!-- Cài đặt -->
                 <li>
-                    <button class="dropdown-button" id="show-settings-btn">
+                    <button class="dropdown-button" onclick="openAccountSettings()">
                         <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
-                            <path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Z"/>
+            <path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Z"/>
                         </svg>
                         Cài đặt tài khoản
                     </button>
                 </li>
-                
-                <!-- Divider -->
                 <li class="dropdown-divider"></li>
                 
-                <!-- Logout -->
                 <li>
                     <a href="#" class="logout-link" onclick="handleLogout(event)">
                         <svg style="padding: 0px 0px 4px 0px;" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
@@ -133,11 +121,9 @@
     </ul>
 </nav>
 
-<!-- Overlay cho mobile -->
 <div id="overlay" onclick="closeSidebar()" aria-hidden="true"></div>
 
-<!-- ===== HẾT PHẦN NAVBAR ===== -->
-    <div class="market-layout">
+<div class="market-layout">
         <div class="left-side-bar">
             <div class="filter-bars">
 
@@ -165,7 +151,7 @@
         <div class="market-content">
             <div class="item-container-wraper">
                 <div class="item-container"></div>
-            </div>  
+            </div>  
             <div class="pagination"></div>
         </div>
     </div>
@@ -212,13 +198,12 @@
                 <h1>Giỏ hàng của bạn</h1>
             </div>
             <button class="cart-close-btn" onclick="closeCart()">
-                <i class="fas fa-times">×</i>
+                <i class="fas fa-times"></i>
             </button>
         </div>
         
         <div class="cart-items">
-            <!-- Cart items will be inserted here by JavaScript -->
-        </div>
+            </div>
         
         <div class="cart-summary">
             <div class="cart-total">
@@ -236,7 +221,6 @@
         </div>
         </div>
 
-    <!-- QR Payment Modal -->
     <div class="qr-modal" id="qrModal" style="display: none;">
         <div class="qr-modal-overlay"></div>
         <div class="qr-modal-content">
@@ -283,7 +267,58 @@
     </div>
 </div>
 
-    <footer class="main-footer">
+<div id="accountModal" class="account-modal-overlay">
+    <div class="account-modal-bg" onclick="closeAccountSettings()"></div>
+    <div class="account-modal-content">
+        
+        <div class="account-modal-header">
+            <h2>Cài đặt tài khoản</h2>
+            <button class="account-modal-close" onclick="closeAccountSettings()">×</button>
+        </div>
+        
+        <form id="accountSettingsForm" onsubmit="handleSaveAccountSettings(event)">
+            <div class="account-modal-body">
+                
+                <div class="form-group">
+                    <label for="accountName">Tên hiển thị:</label>
+                    <input type="text" id="accountName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountEmail">Email:</label>
+                    <input type="email" id="accountEmail" required>
+                </div>
+                
+                <hr class="form-divider">
+                <p style="font-weight: bold; margin-bottom: 15px;">Đổi mật khẩu (Để trống nếu không đổi)</p>
+                
+                <div class="form-group">
+                    <label for="accountCurrentPassword">Mật khẩu hiện tại:</label>
+                    <input type="password" id="accountCurrentPassword" placeholder="Nhập mật khẩu hiện tại của bạn">
+                </div>
+
+                <div class="form-group">
+                    <label for="accountPassword">Mật khẩu mới:</label>
+                    <input type="password" id="accountPassword" placeholder="Ít nhất 6 ký tự">
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountPasswordConfirm">Xác nhận mật khẩu:</label>
+                    <input type="password" id="accountPasswordConfirm" placeholder="Nhập lại mật khẩu mới">
+                </div>
+                
+                <p id="accountMsg" class="account-modal-msg"></p>
+
+            </div>
+            
+            <div class="account-modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAccountSettings()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+<footer class="main-footer">
     <div class="footer-container">
         <div class="footer-column">
             <h3>UNISHELF</h3>
@@ -318,7 +353,5 @@
         <p>&copy; 2025 UNISHELF. All rights reserved.</p>
     </div>
 </footer>
-
 </body>
 </html>
-
