@@ -92,25 +92,6 @@
     margin: 10px;
 }
 
-/* 🎨 Nút danh mục */
-.category-btn {
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 10px 22px;
-    border-radius: 25px;    
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
-    backdrop-filter: blur(6px);
-}
-
-.category-btn:hover {
-    background: #fff;
-    color: #09eb27;
-    transform: scale(1.08);
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
-}
 
 /* 🛒 Khu vực sản phẩm */
 /* Container chứa sản phẩm - dùng grid để dàn hàng ngang responsive */
@@ -128,7 +109,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
-    padding: 100px 40px 140px 40px; 
+    padding: 10px 40px 10px 40px; 
     
     /* Thiết lập chiều rộng tối đa hợp lý cho container Grid */
     max-width: 1400px; /* Ví dụ: giới hạn chiều rộng trang */
@@ -139,14 +120,17 @@
     justify-items: center; 
 }
 
-/* 💎 Card sản phẩm */
+
+
+/* Card sản phẩm */
 .market-item {
+    background: rgba(191, 228, 200, 0.7);
+    backdrop-filter: blur(8px);
     width: 100%;
     max-width: 320px;
-    background: #efb506;
     border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.35s ease;
     cursor: pointer;
     text-align: center;
@@ -204,7 +188,7 @@
     font-weight: 700;
 }
 
-/* 🌟 Phân trang */
+/* Phân trang */
 .pagination {
     align-self: center;
     position: sticky;
@@ -277,11 +261,6 @@
         flex: 1 1 calc(50% - 24px);
     }
 
-    #categoryBar {
-        gap: 16px;
-        padding: 8px 15px;
-    }
-
 }
 
 @media (max-width: 480px) {
@@ -291,8 +270,6 @@
 .filter-bars {
     display: flex;
     justify-content: center; /* Căn giữa các ô tìm kiếm bên trong nó */
-    
-    /* 🔥 KHẮC PHỤC LỆCH TRÁI */
     width: fit-content; /* Đảm bảo nó không chiếm hết chiều rộng nếu không cần thiết */
     margin: 0 auto; /* Căn giữa khối .filter-bars trên trang */
 }
@@ -304,10 +281,6 @@
     .market-item {
         flex: 1 1 100%;
     }
-
-    /* #searchInput {
-        width: 180px;
-    } */
 
 }
 
@@ -1796,4 +1769,103 @@
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== NÚT GIỎ HÀNG STICKY (Thêm vào cuối marketPage.css) ===== */
+
+/* Nút tròn sticky bên phải */
+.floating-cart-btn {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+}
+
+.floating-cart-btn:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.6);
+    background: linear-gradient(135deg, #20c997, #28a745);
+}
+
+.floating-cart-btn svg {
+    width: 32px;
+    height: 32px;
+    fill: white;
+}
+
+/* Badge số lượng */
+.floating-cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation pulse */
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+    50% {
+        box-shadow: 0 6px 30px rgba(40, 167, 69, 0.7);
+    }
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+    .floating-cart-btn {
+        right: 20px;
+        bottom: 80px;
+        width: 60px;
+        height: 60px;
+    }
+    
+    .floating-cart-btn svg {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .floating-cart-badge {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+        border: 2px solid white;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-cart-btn {
+        right: 15px;
+        bottom: 70px;
+        width: 55px;
+        height: 55px;
+    }
+    
+    .floating-cart-btn svg {
+        width: 26px;
+        height: 26px;
+    }
 }

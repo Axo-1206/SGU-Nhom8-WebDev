@@ -620,6 +620,47 @@ function addToCart(item, quantity = 1) {
   }
 }
 
+// ===== CART FUNCTIONS (DI CHUYỂN TỪ NAVBAR.JS) =====
+
+// Hàm cập nhật badge giỏ hàng
+window.updateCartBadge = function() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    
+    // Cập nhật badge sticky
+    const floatingBadge = document.getElementById('floating-cart-badge');
+    if (floatingBadge) {
+        floatingBadge.textContent = totalItems;
+        floatingBadge.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
+};
+
+// Hàm hiển thị giỏ hàng
+window.showCart = function() {
+    const cartContainer = document.querySelector('.cart-container');
+    const cartOverlay = document.querySelector('.cart-overlay');
+
+    if (cartContainer && cartOverlay) {
+        cartOverlay.style.display = 'block';
+        cartContainer.style.display = 'flex'; 
+        
+        setTimeout(() => {
+            cartContainer.classList.add('active');
+        }, 10);
+        
+        updateCartDisplay(); 
+    }
+};
+
+// Lắng nghe thay đổi giỏ hàng từ các tab khác
+window.addEventListener('storage', function(e) {
+    if (e.key === 'cart') {
+        updateCartBadge();
+    }
+});
+
+// ===== KẾT THÚC CART FUNCTIONS =====
+
 // Hàm đóng giỏ hàng
 window.closeCart = function() {
     const cartContainer = document.querySelector('.cart-container');
@@ -1416,9 +1457,13 @@ document.addEventListener("DOMContentLoaded", () => {
   for (const category of Object.values(market)) {
     filteredResults.push(...category.items);
   }
+  renderMarketItems(1);
 
   // Bind filter button
-  const filterBtn = document.getElementById('apply-filter-button');
+  const filterBtn = document.querySelector('.filter-button');
+  const filterPanel = document.getElementById('filter-panel');
+  const applyBtn = document.getElementById('apply-filter-button');
+
   if (filterBtn) {
     filterBtn.addEventListener('click', applyFilters);
   }
@@ -1434,5 +1479,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-	renderMarketItems(1);
+  if (applyBtn) {
+    applyBtn.addEventListener('click', applyFilters);
+  }
+
+  // Close filter panel when clicking outside
+  document.addEventListener('click', (event) => {
+    const isClickInsidePanel = filterPanel.contains(event.target);
+    const isClickOnButton = filterBtn.contains(event.target);
+
+    if (!isClickInsidePanel && !isClickOnButton) {
+      filterPanel.style.display = 'none';
+    }
+  });
+  updateCartBadge()
 });

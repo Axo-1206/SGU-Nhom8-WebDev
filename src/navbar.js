@@ -4,7 +4,6 @@ let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 // Khi DOM đã sẵn sàng, hiển thị đúng trạng thái đăng nhập
 document.addEventListener('DOMContentLoaded', () => {
     checkLoginStatus();
-    updateCartBadge(); // THÊM: Cập nhật badge ngay khi load
 });
 
 
@@ -68,11 +67,9 @@ function checkLoginStatus() {
 function showLoginButton() {
     const loginLi = document.getElementById('loginLi');
     const accountLi = document.getElementById('accountLi');
-    const cartLi = document.getElementById('cartLi');
     
     if (loginLi) loginLi.style.display = 'block';
     if (accountLi) accountLi.style.display = 'none';
-    if (cartLi) cartLi.style.display = 'none';
 }
 
 // Hiển thị dropdown Account
@@ -83,7 +80,6 @@ function showAccountDropdown(user) {
     
     if (loginLi) loginLi.style.display = 'none';
     if (accountLi) accountLi.style.display = 'block';
-    if (cartLi) cartLi.style.display = 'block';
     
     // Cập nhật thông tin user
     const userName = document.getElementById('userName');
@@ -104,44 +100,7 @@ function showAccountDropdown(user) {
         historyBtn.addEventListener('click', handleShowHistory);
     }
 }
-// HÀM HIỂN THỊ GIỎ HÀNG (ĐÃ SỬA CHUẨN)
-window.showCart = function() {
-    const cartContainer = document.querySelector('.cart-container');
-    const cartOverlay = document.querySelector('.cart-overlay');
 
-    // Kiểm tra xem user có đăng nhập hay không (Tùy chọn, nếu bạn muốn giới hạn)
-    // const currentUser = localStorage.getItem('currentUser');
-    // if (!currentUser) { alert('Vui lòng đăng nhập để xem giỏ hàng.'); return; }
-
-    if (cartContainer && cartOverlay) {
-        // 1. Bật display để kích hoạt transition
-        cartOverlay.style.display = 'block';
-        cartContainer.style.display = 'flex'; 
-
-        // 2. Thêm class để kích hoạt hiệu ứng trượt vào (CSS)
-        setTimeout(() => {
-            cartContainer.classList.add('active');
-        }, 10);
-        
-        // 3. Cập nhật nội dung giỏ hàng
-        updateCartDisplay(); 
-    }
-};
-window.updateCartBadge = function() {
-    const cartBadge = document.getElementById('cart-badge'); // Dùng ID mới 'cart-badge'
-    if (cartBadge) {
-        // Lấy số lượng từ localStorage
-        const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
-        const totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
-        
-        // Cập nhật text
-        cartBadge.textContent = totalItems;
-        
-        // Ẩn/hiện badge
-        cartBadge.style.display = totalItems > 0 ? 'block' : 'none';
-
-    }
-}
 // SỬA: Tạo hàm xử lý riêng cho nút Lịch sử
 function handleShowHistory(event) {
     event.preventDefault();
@@ -252,40 +211,8 @@ dropdownLinks.forEach(link => {
 });
 
 
-// ===== CART BADGE - CHẠY Ở TẤT CẢ TRANG =====
 
-// Cập nhật số lượng badge giỏ hàng
-function updateCartBadge() {
-    const cartBadge = document.getElementById('cartBadge');
-    if (cartBadge) {
-        // Lấy số lượng từ localStorage
-        const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
-        const totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
-        
-        // Cập nhật text
-        cartBadge.textContent = totalItems;
-        
-        // Thêm/xóa class 'empty'
-        if (totalItems === 0) {
-            cartBadge.classList.add('empty');
-        } else {
-            cartBadge.classList.remove('empty');
-        }
-    }
-}
-
-// Lắng nghe thay đổi giỏ hàng từ các tab khác
-window.addEventListener('storage', function(e) {
-    if (e.key === 'cart') {
-        updateCartBadge();
-    }
-});
-
-// Export để cart.js và các file khác có thể gọi
-window.updateCartBadge = updateCartBadge;
-
-
-// SỬA: CHUYỂN TOÀN BỘ CODE LỊCH SỬ MUA HÀNG VÀO ĐÂY (TỪ MARKETCONTROLLER.JS)
+//TOÀN BỘ CODE LỊCH SỬ MUA HÀNG (TỪ MARKETCONTROLLER.JS)
 
 // ===== Purchase history UI =====
 
