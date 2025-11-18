@@ -23,10 +23,12 @@ html{
 	scroll-behavior: smooth;
 }
 body{
+	 display: flex;
+    flex-direction: column;
 	min-height: 100vh;
-	min-height: 100dvh;
 	background-image: url("../assets/images/backgroundimage.jpg");
 	background-attachment: fixed;
+	margin: 0;
 }
 main{
   	padding: min(1em, 2%);
@@ -329,6 +331,7 @@ nav a.accent-link{
     padding-top: 50px;
     font-size: 0.95rem;
     width: 100%;
+	 margin-top: auto;
 }
 
 .footer-container {
