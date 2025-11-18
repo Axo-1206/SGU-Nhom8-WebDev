@@ -1,4 +1,12 @@
-
+.clear-filter-button {
+    width: 100%; 
+    margin-top: 10px; 
+    background: #ccc; 
+    color: black; 
+    padding: 8px; 
+    border: none; 
+    border-radius: 4px;
+}
 
 .filter-button {
     backdrop-filter: blur(8px);
