@@ -897,14 +897,14 @@ window.cancelPayment = function() {
 };
 
 // Hàm xử lý thanh toán
-window.processCheckout = function() {
+window.processCheckout = function(chosenAddress) {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     
     if (cart.length === 0) {
         alert('Giỏ hàng của bạn đang trống!');
         return;
     }
-    
+    localStorage.setItem('tempOrderAddress', chosenAddress);
     showQRModal();
 };
 
@@ -917,7 +917,7 @@ window.completePayment = function() {
     try {
         // Lấy giỏ hàng
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        
+        const chosenAddress = localStorage.getItem('tempOrderAddress') || (currentUser ? currentUser.address : 'N/A');
         // SỬA: Lấy thông tin người dùng hiện tại
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
@@ -941,7 +941,7 @@ window.completePayment = function() {
                 user: {
                     username: currentUser ? currentUser.username : 'Guest',
                     email: currentUser ? currentUser.email : 'N/A',
-                    address: currentUser ? currentUser.address: 'N/A'
+                    address: chosenAddress
                 },
                 status: 'Đang xử lý' // <-- THÊM TRẠNG THÁI MẶC ĐỊNH
             };
@@ -962,7 +962,7 @@ window.completePayment = function() {
 
     // Xóa giỏ hàng (như cũ)
     localStorage.setItem('cart', '[]');
-    
+    localStorage.removeItem('tempOrderAddress');
     // Cập nhật badge (như cũ)
     if (window.updateCartBadge) {
         window.updateCartBadge();
@@ -985,7 +985,7 @@ window.completePayment = function() {
     }, 3000);
 };
 //thanh toán bằng tiền mặt
-window.processCashPayment = function () {
+window.processCashPayment = function (chosenAddress) {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     if (cart.length === 0) {
         alert('Giỏ hàng đang trống!');
@@ -1010,7 +1010,7 @@ window.processCashPayment = function () {
             user: {
                 username: currentUser ? currentUser.username : "Guest",
                 email: currentUser ? currentUser.email : "N/A",
-                address: currentUser ? currentUser.address : "N/A",
+                address: chosenAddress,
             },
             status: "Chờ thanh toán khi nhận hàng"  // ⭐ TRẠNG THÁI KHÁC QR
         };
@@ -1577,3 +1577,75 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   updateCartBadge()
 });
+// Biến tạm để lưu trữ hàm thanh toán (QR hoặc Cash)
+let pendingPaymentFunction = null;
+
+// Hàm mở Modal Địa chỉ (được gọi bởi nút trong giỏ hàng)
+window.showAddressModal = function(paymentFunction) {
+    // 1. Lưu lại hàm thanh toán sẽ gọi sau
+    pendingPaymentFunction = paymentFunction;
+    
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const modal = document.getElementById('addressModal');
+    const defaultRadio = document.getElementById('useDefaultAddress');
+    const defaultLabel = document.getElementById('defaultAddressLabel');
+    const newRadio = document.getElementById('useNewAddress');
+    const newAddressInput = document.getElementById('newAddressInput');
+
+    // 2. Tải địa chỉ mặc định (nếu có)
+    if (currentUser && currentUser.address && currentUser.address.trim() !== "") {
+        defaultLabel.textContent = `Sử dụng địa chỉ mặc định: ${currentUser.address}`;
+        defaultRadio.disabled = false;
+        defaultRadio.checked = true;
+        newRadio.checked = false;
+    } else {
+        // Nếu không có địa chỉ mặc định, ép người dùng nhập địa chỉ mới
+        defaultLabel.textContent = "Không có địa chỉ mặc định (Vui lòng nhập địa chỉ mới)";
+        defaultRadio.disabled = true;
+        defaultRadio.checked = false;
+        newRadio.checked = true;
+    }
+    
+    // 3. Reset và hiển thị modal
+    newAddressInput.value = '';
+    modal.style.display = 'flex';
+}
+
+// Hàm đóng Modal Địa chỉ
+window.closeAddressModal = function() {
+    document.getElementById('addressModal').style.display = 'none';
+    pendingPaymentFunction = null; // Hủy hàm đang chờ
+}
+
+// Hàm xác nhận địa chỉ (được gọi bởi nút trong modal địa chỉ)
+window.handleAddressConfirmation = function() {
+    const useDefault = document.getElementById('useDefaultAddress').checked;
+    const newAddress = document.getElementById('newAddressInput').value.trim();
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    let chosenAddress = "";
+
+    if (useDefault) {
+        chosenAddress = currentUser.address;
+    } else {
+        chosenAddress = newAddress;
+    }
+
+    // Kiểm tra xem người dùng đã chọn/nhập địa chỉ chưa
+    if (!chosenAddress || chosenAddress.trim() === "") {
+        alert('Vui lòng cung cấp địa chỉ giao hàng!');
+        return;
+    }
+    
+    // Đóng modal địa chỉ
+    closeAddressModal();
+    
+    // Gọi hàm thanh toán (QR hoặc Cash) đã lưu ở bước 1
+    // và TRUYỀN địa chỉ đã chọn vào
+    if (typeof pendingPaymentFunction === 'function') {
+        pendingPaymentFunction(chosenAddress);
+    }
+    
+    // Xóa hàm đang chờ
+    pendingPaymentFunction = null;
+}
