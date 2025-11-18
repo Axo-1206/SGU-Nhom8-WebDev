@@ -15,8 +15,7 @@
     <link rel="stylesheet" href="../css/productDetail.css">
     <script src="../src/navbar.js" defer></script>
     <script type="module" src="../src/marketController.js" defer></script>
-    
-    <script type="module" src="../src/cart.js"></script>
+  
     </head>
 <body>
 
@@ -141,37 +140,37 @@
     </div>
 
     <!-- Filter Panel -->
-    <div id="filter-panel" class="filter-panel" style="display: none">
-        <div class="fiter-option">
-            <label for="minPrice">Giá tối thiểu:</label>
-            <input type="number" id="minPrice" placeholder="Min pirce" style="width: 100%;">
-        </div>
+   <div id="filter-panel">
+    <h3>Bộ lọc sản phẩm</h3>
 
-        <div class="fiter-option">
-            <label for="maxPrice">Giá tối đa:</label>
-            <input type="number" id="maxPrice" placeholder="Max price" style="width: 100%;">
-        </div>
-
-        <div class="fiter-option">
-            <label for="releaseYear">Năm phát hành:</label>
-            <input type="number" id="releaseYear" placeholder="Release year" style="width: 100%;">
-        </div>
-
-        <div class="filter-option">
-            <label for="selectedCategory" id="filter-category">Danh mục:</label>
-            <select id="selectedCategory" style="width: 100%;">
-                <option value="">-- Chọn danh mục --</option>
-                <!-- Options will be injected by JavaScript -->
-            </select>
-        </div>
-
-        <button class="clear-filter-button" id="clear-filter-button"">
-            Xóa bộ lọc
-        </button>
-
-
-        <button class="apply-filter-button" id="apply-filter-button">Áp dụng bộ lọc</button>
+    <div class="filter-box">
+        <label>Giá tối thiểu</label>
+        <input type="number" id="minPrice" placeholder="Nhập giá min">
     </div>
+
+    <div class="filter-box">
+        <label>Giá tối đa</label>
+        <input type="number" id="maxPrice" placeholder="Nhập giá max">
+    </div>
+
+    <div class="filter-box">
+        <label>Năm phát hành</label>
+        <input type="number" id="releaseYear" placeholder="Ví dụ: 2023">
+    </div>
+
+    <div class="filter-box">
+        <label>Tên sản phẩm</label>
+        <input type="text" id="searchQuery" placeholder="Nhập tên sách">
+    </div>
+
+    <div class="filter-box">
+        <label>Danh mục</label>
+        <select id="selectedCategory"></select>
+    </div>
+
+    <button class="apply-filter-button" id="apply-filter-button">Áp dụng</button>
+    <button class="reset-filter-button" onclick="resetFilter()">Đặt lại</button>
+</div>
 
 
     <div class="product-container"  id="productDetail">
