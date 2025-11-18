@@ -620,6 +620,47 @@ function addToCart(item, quantity = 1) {
   }
 }
 
+// ===== CART FUNCTIONS (DI CHUYỂN TỪ NAVBAR.JS) =====
+
+// Hàm cập nhật badge giỏ hàng
+window.updateCartBadge = function() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    
+    // Cập nhật badge sticky
+    const floatingBadge = document.getElementById('floating-cart-badge');
+    if (floatingBadge) {
+        floatingBadge.textContent = totalItems;
+        floatingBadge.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
+};
+
+// Hàm hiển thị giỏ hàng
+window.showCart = function() {
+    const cartContainer = document.querySelector('.cart-container');
+    const cartOverlay = document.querySelector('.cart-overlay');
+
+    if (cartContainer && cartOverlay) {
+        cartOverlay.style.display = 'block';
+        cartContainer.style.display = 'flex'; 
+        
+        setTimeout(() => {
+            cartContainer.classList.add('active');
+        }, 10);
+        
+        updateCartDisplay(); 
+    }
+};
+
+// Lắng nghe thay đổi giỏ hàng từ các tab khác
+window.addEventListener('storage', function(e) {
+    if (e.key === 'cart') {
+        updateCartBadge();
+    }
+});
+
+// ===== KẾT THÚC CART FUNCTIONS =====
+
 // Hàm đóng giỏ hàng
 window.closeCart = function() {
     const cartContainer = document.querySelector('.cart-container');
@@ -1128,33 +1169,108 @@ const dataString = localStorage.getItem("adminProducts");
 const marketItems = dataString ? JSON.parse(dataString) : market;
 let filteredResults = [];
 
+function clearFilters() {
+  // Reset tất cả filter inputs
+  document.getElementById('minPrice').value = '';
+  document.getElementById('maxPrice').value = '';
+  document.getElementById('releaseYear').value = '';
+  // document.getElementById('searchInput').value = '';
+  document.getElementById('selectedCategory').value = '';
+
+  // Hiện thị tất cả item từ market
+  filteredResults = [];
+  // Giữ lại filter bằng tên 
+  for (const category of Object.values(market)) {
+    let items = category.items;
+
+    if (searchQuery.length > 0) {
+      items = category.items.filter(item => 
+       item.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+      );
+    }
+
+    filteredResults.push(...items);
+  }
+  
+  // Render full list starting from page 1
+  renderMarketItems(1);
+}
+
+
 // Filter items
 function applyFilters() {
+  const searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+  const selectedCategory = document.getElementById('selectedCategory').value;
   const minPrice = parseInt(document.getElementById('minPrice').value) || null;
   const maxPrice = parseInt(document.getElementById('maxPrice').value) || null;
   const releaseYear = parseInt(document.getElementById('releaseYear').value) || null;
-  const selectedCategory = document.getElementById('selectedCategory').value;
-
-  const noFilterApplied =
-    !minPrice && !maxPrice && !releaseYear && !selectedCategory;
 
   filteredResults = [];
 
   for (const [categoryName, categoryData] of Object.entries(market)) {
-    if (selectedCategory && categoryName !== selectedCategory) continue;
+    let items = categoryData.items;
 
-    const items = categoryData.items.filter(item => {
-      if (noFilterApplied) return true;
+    //  1: Kiểm tra active
+    items = items.filter(item => item.active);
 
-      const price = parseInt(item.price);
-      const matchesPrice = (!minPrice || price >= minPrice) && (!maxPrice || price <= maxPrice);
-      const matchesYear = !releaseYear || item.releaseYear === releaseYear;
-      return matchesPrice && matchesYear;
-    });
+    if (!selectedCategory || categoryName == selectedCategory || selectedCategory == "-- Chọn danh mục --") {
+      filteredResults.push(...items); 
+      continue;
+    }
 
-    filteredResults.push(...items);
+     //  2: Tìm kiếm theo tên
+    if (searchQuery.length > 0) {
+      items = categoryData.items.filter(item =>
+        item.name.toLowerCase().includes(searchQuery)
+      );
+      filteredResults.push(...items);
+    } 
+
+    //  4: Tìm kiếm theo giá
+    if (minPrice || maxPrice) {
+      items = categoryData.items.filter(item => {
+        const price = parseInt(item.price);
+        return (!minPrice || price >= minPrice) && (!maxPrice || price <= maxPrice);
+      });
+      filteredResults.push(...items);
+    }
+
+    //  5: Tìm kiếm theo năm
+    if (releaseYear) {
+      items = categoryData.items.filter(item => item.releaseYear === releaseYear);
+      filteredResults.push(...items);
+    }
+
+
+    // //  2: Tìm kiếm theo tên
+    // if (searchQuery.length > 0) {
+    //   items = items.filter(item =>
+    //     item.name.toLowerCase().includes(searchQuery)
+    //   );
+    // } else {
+    //   //  3: Bỏ qua filter danh mục nếu tìm kiếm theo tên\
+    //   if (selectedCategory && selectedCategory !== "-- Chọn danh mục --" && categoryName !== selectedCategory) {
+    //     continue; // Skip this category
+    //   }
+    // }
+
+    // //  4: Tìm kiếm theo giá
+    // if (minPrice || maxPrice) {
+    //   items = items.filter(item => {
+    //     const price = parseInt(item.price);
+    //     return (!minPrice || price >= minPrice) && (!maxPrice || price <= maxPrice);
+    //   });
+    // }
+
+    // //  5: Tìm kiếm theo năm
+    // if (releaseYear) {
+    //   items = items.filter(item => item.releaseYear === releaseYear);
+    // }
+
+    
   }
-  renderMarketItems(1); // Show page 1
+
+  renderMarketItems(1);
 }
 
 // Hiện thị item trong item-container
@@ -1167,13 +1283,6 @@ function renderMarketItems(page = 1) {
   const start = (page - 1) * itemsPerPage;
 	const end = start + itemsPerPage;
 	let pageItems = filteredResults.slice(start, end); 
-
-  pageItems = pageItems.filter(item => {
-        const matchesName = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesActive = item.active !== false; // LỌC BỎ SẢN PHẨM ẨN
-        
-        return matchesActive && matchesName;
-	});
 
 	pageItems.forEach(item => {
 		const itemDiv = document.createElement("div");
@@ -1213,7 +1322,7 @@ function renderPagination(totalItems, currentPage, itemsPerPage) {
 	paginationContainer.innerHTML = "";
 
   // Nếu số trang == 1 thì không hiện  thị thanh trang
-  if (totalPages == 1) {
+  if (totalPages <= 1) {
     paginationContainer.style.display = "none";
     return;
   }
@@ -1400,6 +1509,7 @@ const searchInput = document.getElementById("searchInput");
 if (searchInput) { 
 	searchInput.addEventListener("input", e => {
 	searchQuery = e.target.value.trim();
+  applyFilters();
 	renderMarketItems(1);
 	});
 }
@@ -1429,12 +1539,13 @@ document.addEventListener("DOMContentLoaded", () => {
   for (const category of Object.values(market)) {
     filteredResults.push(...category.items);
   }
+  renderMarketItems(1);
 
   // Bind filter button
-  const filterBtn = document.getElementById('apply-filter-button');
-  if (filterBtn) {
-    filterBtn.addEventListener('click', applyFilters);
-  }
+  const filterBtn = document.querySelector('.filter-button');
+  const filterPanel = document.getElementById('filter-panel');
+  const applyBtn = document.getElementById('apply-filter-button');
+  const clearBtn = document.getElementById('clear-filter-button')
 
   // Populate category dropdown from market keys
   const categorySelect = document.getElementById('selectedCategory');
@@ -1447,5 +1558,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-	renderMarketItems(1);
+  if (applyBtn) {
+    applyBtn.addEventListener('click', applyFilters);
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', clearFilters);
+  }
+
+  // Close filter panel when clicking outside
+  document.addEventListener('click', (event) => {
+    const isClickInsidePanel = filterPanel.contains(event.target);
+    const isClickOnButton = filterBtn.contains(event.target);
+
+    if (!isClickInsidePanel && !isClickOnButton) {
+      filterPanel.style.display = 'none';
+    }
+  });
+  updateCartBadge()
 });
