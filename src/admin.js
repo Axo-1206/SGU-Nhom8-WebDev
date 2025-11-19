@@ -1,13 +1,15 @@
 import {
+    formatK,
     market as defaultMarketItems
 } from './marketController.js';
 
-// Biến tìm kiếm
+// Biến tìm kiếm và lọc
 const productSearchInput = document.getElementById("product-search-input");
 const accountSearchInput = document.getElementById("account-search-input");
 const priceSearchInput = document.getElementById("price-search-input");
 const importSearchInput = document.getElementById("import-search-input");
-const orderSearchInput = document.getElementById("order-search-input");
+// Biến lọc đơn hàng theo trạng thái
+const orderFilterStatus = document.getElementById("order-filter-status");
 
 // Biến phân trang
 const ITEMS_PER_PAGE = 10; 
@@ -58,11 +60,11 @@ function setActiveTab(tab) {
         renderPriceTable(priceCurrentPage);
     }
     else if (tab === "orders") { 
-    if (orderPanel) {
-        orderPanel.style.display = "block";
-        renderOrdersTable(orderCurrentPage);
+        if (orderPanel) {
+            orderPanel.style.display = "block";
+            renderOrdersTable(orderCurrentPage);
+        }
     }
-}
 }
 //xử lý sự kiện khi chuyển tab
 document.getElementById("market-tab").addEventListener("click", () => setActiveTab("market"));
@@ -252,7 +254,7 @@ function openEditModal(pageIndex) {
     document.getElementById("product-id").value = item.id;
     document.getElementById("product-id").disabled = true;
     document.getElementById("product-name").value = item.name;
-    document.getElementById("product-price").value = item.price.replace('$', ''); 
+    document.getElementById("product-price").value = item.price; 
     document.getElementById("product-image").value = item.image;
     document.getElementById("product-description").value = item.description || ""; 
     document.getElementById("product-quantity").value = item.quantity || 0;
@@ -285,7 +287,7 @@ addProductForm.addEventListener("submit", (e) => {
     const id=document.getElementById("product-id").value.trim();
     const name = document.getElementById("product-name").value;
     const priceValue = parseFloat(document.getElementById("product-price").value) || 0;
-    const price =priceValue+"K"; 
+    const price =priceValue; 
     const image = document.getElementById("product-image").value;
     const description = document.getElementById("product-description").value;
     const quantity = parseInt(document.getElementById("product-quantity").value) || 0;
@@ -438,12 +440,13 @@ function renderProductTable(page = 1) {
         tbody.innerHTML = '<tr><td colspan="6">Không tìm thấy sản phẩm.</td></tr>';
     } else {
         itemsToRender.forEach((item, index) => { // 'index' ở đây là 0 -> 9
+            const displayPrice = formatK(item.price);
             const tr = document.createElement("tr");
             tr.dataset.itemId = item.id;
             tr.innerHTML = `
                 <td>${item.id}</td>
                 <td>${item.name}</td>
-                <td>${item.price}</td> 
+                <td>${displayPrice}</td> 
                 
                 <td class="${item.quantity < 20 ? 'low-stock-cell' : ''}">${item.quantity}</td> 
                 
@@ -838,7 +841,7 @@ function renderCurrentSlipProducts() {
         tr.innerHTML = `
             <td>${product.name}</td>
             <td>${product.quantity}</td>
-            <td>${product.importPrice}</td>
+            <td>${formatK(product.importPrice)}</td>
             <td><button type="button" class="slip-delete-product-btn" data-index="${index}">X</button></td>
         `;
         slipProductsTbody.appendChild(tr);
@@ -1227,7 +1230,7 @@ function renderPriceTable(page = 1) {
             if (originalIndex === -1) return; 
 
             const cost_price = parseFloat(item.cost_price) || 0;
-            const selling_price = parseFloat(item.price.replace('$', '')) || 0; 
+            const selling_price = parseFloat(item.price) || 0; 
             let profit_margin = 0;
             if (cost_price > 0) {
                 profit_margin = ((selling_price - cost_price) / cost_price) * 100;
@@ -1239,9 +1242,9 @@ function renderPriceTable(page = 1) {
             tr.innerHTML = `
                 <td>${id++}</td>
                 <td>${item.name}</td>
-                <td class="cost-price-cell" data-cost="${cost_price.toFixed(2)}">${cost_price.toFixed(2)}</td>
+                <td class="cost-price-cell" data-cost="${cost_price}">${formatK(cost_price)}</td>
                 <td><input type="text" class="profit-input" value="${profit_margin.toFixed(2)}">%</td>
-                <td class="selling-price-cell">$${selling_price.toFixed(2)}</td>
+                <td class="selling-price-cell">${formatK(selling_price)}K</td>
                 <td><button class="price-save-btn">Lưu</button></td>
             `;
             priceTableBody.appendChild(tr);
@@ -1255,13 +1258,20 @@ function renderPriceTable(page = 1) {
 }
 function handlePriceTableInput(e) {
     if (!e.target.classList.contains('profit-input')) return;
+    
     const tr = e.target.closest('tr');
     const costPriceCell = tr.querySelector('.cost-price-cell');
     const sellingPriceCell = tr.querySelector('.selling-price-cell');
+    
+    // Lấy giá gốc từ data-cost (chính xác hơn lấy text)
     const cost_price = parseFloat(costPriceCell.dataset.cost) || 0;
     const new_margin_percent = parseFloat(e.target.value) || 0;
+    
+    // Tính giá bán mới
     const new_selling_price = cost_price * (1 + new_margin_percent / 100);
-    sellingPriceCell.textContent = '$' + new_selling_price.toFixed(2);
+    
+    // Cập nhật hiển thị: Làm tròn + K
+    sellingPriceCell.textContent = formatK(new_selling_price);
 }
 function handlePriceTableSave(e) {
     if (!e.target.classList.contains('price-save-btn')) return;
@@ -1371,8 +1381,8 @@ if (importSearchInput) {
         renderImportsTable(1);
     });
 }
-if (orderSearchInput) { 
-    orderSearchInput.addEventListener("input", () => {
+if (orderFilterStatus) { 
+    orderFilterStatus.addEventListener("change", () => {
         renderOrdersTable(1);
     });
 }
@@ -1405,19 +1415,37 @@ function renderOrdersTable(page = 1) {
     orderCurrentPage = page;
     const allOrders = loadAllOrdersFromStorage();
     const tbody = document.querySelector(".orders-table tbody");
+    
+    // --- Code thêm cột "Khóa đơn" (giữ nguyên từ bước trước) ---
+    const theadRow = document.querySelector(".orders-table thead tr");
+    if (theadRow && !theadRow.innerHTML.includes('Khóa đơn')) {
+        theadRow.innerHTML = `
+            <th>ID Đơn hàng</th>
+            <th>Ngày đặt</th>
+            <th>Khách hàng</th>
+            <th>Địa chỉ</th>
+            <th>Trạng thái</th>
+            <th>Tổng tiền</th>
+            <th>Khóa đơn</th>
+            <th>Hành động</th> 
+        `;
+    }
+    // ----------------------------------------------------------
+
     if (!tbody) return;
     tbody.innerHTML = "";
 
-    const searchTerm = orderSearchInput ? orderSearchInput.value.toLowerCase() : "";
+    // LẤY GIÁ TRỊ TỪ DROPDOWN
+    const filterStatus = document.getElementById("order-filter-status") ? document.getElementById("order-filter-status").value : "";
 
-    // Lọc đơn hàng
+    // LOGIC LỌC MỚI: So sánh chính xác trạng thái
     const filteredOrders = allOrders.filter(order => {
-        const user = order.user || { username: 'Guest', email: 'N/A', address: 'N/A' };
-        return (
-            order.id.toLowerCase().includes(searchTerm) ||
-            user.username.toLowerCase().includes(searchTerm) ||
-            user.email.toLowerCase().includes(searchTerm)
-        );
+        // Nếu chọn "Tất cả" (value rỗng) thì lấy hết
+        if (filterStatus === "") return true;
+        
+        // So sánh trạng thái đơn hàng với giá trị đang chọn
+        // (Dùng toán tử || để phòng hờ order.status bị undefined)
+        return (order.status || 'Chờ xử lý') === filterStatus;
     });
 
     // Phân trang
@@ -1428,33 +1456,44 @@ function renderOrdersTable(page = 1) {
 
     // Render
     if (ordersToRender.length === 0 && page === 1) {
-        tbody.innerHTML = '<tr><td colspan="7">Không tìm thấy đơn hàng nào.</td></tr>'; 
+        tbody.innerHTML = `<tr><td colspan="8">Không tìm thấy đơn hàng nào có trạng thái "${filterStatus || 'Tất cả'}".</td></tr>`; 
     } else {
         ordersToRender.forEach(order => {
             const tr = document.createElement("tr");
             const user = order.user || { username: 'Guest', email: 'N/A', address: 'N/A' };
-            const orderStatus = order.status || 'Chờ xử lý'; // Đảm bảo có status
+            const orderStatus = order.status || 'Chờ xử lý';
+            const isLocked = order.isLocked === true;
 
             tr.innerHTML = `
                 <td>${order.id}</td>
                 <td>${new Date(order.date).toLocaleString()}</td>
                 <td>${user.username}</td>
                 <td>${user.address}</td>
-                <td>${formatOrderStatus(orderStatus)}</td> <td>${order.total}</td>
+                <td>${formatOrderStatus(orderStatus)}</td> 
+                <td>${order.total}</td>
                 <td>
-                    <select class="order-status-select" data-id="${order.id}">
+                    <select class="order-status-select" data-id="${order.id}" ${isLocked ? 'disabled' : ''} style="${isLocked ? 'background:#eee; cursor:not-allowed;' : ''}">
                         <option value="Chờ xử lý" ${orderStatus === 'Chờ xử lý' ? 'selected' : ''}>Chờ xử lý</option>
+                        <option value="Chờ thanh toán khi nhận hàng" ${orderStatus === 'Chờ thanh toán khi nhận hàng' ? 'selected' : ''}>Chờ thanh toán</option>
                         <option value="Đang giao" ${orderStatus === 'Đang giao' ? 'selected' : ''}>Đang giao</option>
                         <option value="Đã giao" ${orderStatus === 'Đã giao' ? 'selected' : ''}>Đã giao</option>
                         <option value="Đã hủy" ${orderStatus === 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
                     </select>
                 </td>
+                <td>
+                    ${isLocked 
+                        ? '<span style="color:red; font-weight:bold;"><i class="fas fa-lock"></i> Đã khóa</span>' 
+                        : `<button class="save-order-btn" data-id="${order.id}">Lưu & Khóa</button>`
+                    }
+                    <button class="view-order-btn" data-id="${order.id}" style="background:#007bff; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Xem chi tiết</button>
+                </td>
+                </td>
+            
             `;
             tbody.appendChild(tr);
         });
     }
 
-    // Render thanh phân trang
     renderPagination("order-pagination", totalItems, page, ITEMS_PER_PAGE, (newPage) => {
         renderOrdersTable(newPage);
     });
@@ -1485,22 +1524,26 @@ function openViewOrderModal(orderId) {
     detailsEl.innerHTML = `
         <p><strong>Ngày đặt:</strong> ${new Date(order.date).toLocaleString()}</p>
         <p><strong>Khách hàng:</strong> ${user.username} (${user.email})</p>
-        <p><strong>Tổng tiền:</strong> <span style="color:#8b14f9;font-weight:700">${order.total}</span></p>
+        <p><strong>Tổng tiền:</strong> <span>${order.total}</span></p>
     `;
 
     tbodyEl.innerHTML = "";
     (order.items || []).forEach(item => {
+        const displayPrice = formatPriceK(item.price);
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${item.name}</td>
             <td>${item.quantity || 1}</td>
-            <td>${item.price}</td>
+            <td>${displayPrice}</td>
         `;
         tbodyEl.appendChild(tr);
     });
 
     viewModal.classList.add("visible");
 }
+// Expose to global scope để gọi từ HTML
+window.openViewOrderModal = openViewOrderModal;
+
 
 // Đóng Modal Xem Chi Tiết Đơn Hàng
 function closeViewOrderModal() {
@@ -1512,8 +1555,7 @@ function closeViewOrderModal() {
 document.addEventListener('click', (e) => {
 
     // Nút đóng modal
-    const closeBtn = document.getElementById("close-view-order-btn-footer");
-    if (closeBtn && closeBtn.contains(e.target)) {
+    if (e.target.classList.contains('closef') || e.target.closest('.closef')) {
         closeViewOrderModal();
         return;
     }
@@ -1567,6 +1609,51 @@ document.querySelector(".orders-table tbody").addEventListener('change', (e) => 
             }
             
             renderOrdersTable(orderCurrentPage);
+        }
+    }
+});
+// Lắng nghe sự kiện click vào nút "Lưu & Khóa"
+document.querySelector(".orders-table tbody").addEventListener('click', (e) => {
+    
+    // 1. XỬ LÝ NÚT XEM CHI TIẾT
+    if (e.target.classList.contains('view-order-btn')) {
+        const orderId = e.target.dataset.id;
+        openViewOrderModal(orderId);
+        return;
+    }
+
+    // 2. XỬ LÝ NÚT LƯU & KHÓA (Code cũ giữ nguyên)
+    if (e.target.classList.contains('save-order-btn')) {
+        const orderId = e.target.dataset.id;
+        
+        if(confirm(`Bạn có chắc muốn chốt trạng thái đơn hàng ${orderId}? \nSau khi lưu, bạn sẽ KHÔNG thể chỉnh sửa trạng thái được nữa.`)) {
+            const allOrders = loadAllOrdersFromStorage();
+            const orderIndex = allOrders.findIndex(o => o.id === orderId);
+            
+            if (orderIndex !== -1) {
+                // Đặt cờ khóa
+                allOrders[orderIndex].isLocked = true;
+                saveAllOrdersToStorage(allOrders);
+                
+                // Đồng bộ sang orders cá nhân
+                const userOrdersString = localStorage.getItem('orders');
+                if (userOrdersString) {
+                    try {
+                        let userOrders = JSON.parse(userOrdersString);
+                        const userOrderIndex = userOrders.findIndex(o => o.id === orderId);
+                        if (userOrderIndex !== -1) {
+                            userOrders[userOrderIndex].isLocked = true;
+                            userOrders[userOrderIndex].status = allOrders[orderIndex].status;
+                            localStorage.setItem('orders', JSON.stringify(userOrders));
+                        }
+                    } catch (err) {
+                        console.error("Lỗi cập nhật đơn hàng cá nhân:", err);
+                    }
+                }
+                
+                renderOrdersTable(orderCurrentPage);
+                alert("Đã khóa đơn hàng thành công!");
+            }
         }
     }
 });

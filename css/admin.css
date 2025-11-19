@@ -362,7 +362,7 @@
     position: relative; 
     border: 1px solid #4CAF50;
 }
-.modal-content .cancel-btn {
+.modal-content .cancel-btn{
     background-color: #6c757d;
     padding: 8px 15px;
     border: none;
@@ -451,7 +451,8 @@
 #product-search-input,
 #account-search-input,
 #price-search-input,
-#import-search-input {
+#import-search-input,
+#order-search-input{
     padding: 8px 12px;
     border: 1px solid #495057;
     border-radius: 5px;
@@ -557,4 +558,47 @@
     max-height: 200px;   
     overflow-y: auto;
     margin-bottom: 15px;
+}
+
+#viewOrderModal .slip-products-table {
+    width: 100% !important;
+    table-layout: fixed !important; 
+    border-collapse: collapse !important;
+}
+
+/* Cột 1: Tên sản phẩm (Chiếm 50%) */
+#viewOrderModal .slip-products-table th:nth-child(1),
+#viewOrderModal .slip-products-table td:nth-child(1) {
+    width: 50%;
+    word-break: break-word; /* Xuống dòng nếu tên quá dài */
+}
+
+/* Cột 2: Số lượng (Chiếm 25%) */
+#viewOrderModal .slip-products-table th:nth-child(2),
+#viewOrderModal .slip-products-table td:nth-child(2) {
+    width: 25%;
+    text-align: center;
+}
+
+/* Cột 3: Giá (Chiếm 25%) */
+#viewOrderModal .slip-products-table th:nth-child(3),
+#viewOrderModal .slip-products-table td:nth-child(3) {
+    width: 25%;
+    text-align: right;
+}
+
+/*Kẻ viền*/
+#viewOrderModal .slip-products-table th, 
+#viewOrderModal .slip-products-table td {
+    border: 1px solid #444; 
+    padding: 10px;
+}
+
+/* Màu nền tiêu đề */
+#viewOrderModal .slip-products-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+.order-filter{
+   padding: 8px; border-radius: 5px; background: #343a40; color: white; border: 1px solid #495057;
 }
