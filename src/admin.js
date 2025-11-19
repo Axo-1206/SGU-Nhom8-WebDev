@@ -1529,7 +1529,7 @@ function openViewOrderModal(orderId) {
 
     tbodyEl.innerHTML = "";
     (order.items || []).forEach(item => {
-        const displayPrice = formatPriceK(item.price);
+        const displayPrice = formatK(item.price);
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${item.name}</td>
