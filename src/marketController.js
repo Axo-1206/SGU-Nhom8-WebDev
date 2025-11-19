@@ -586,7 +586,7 @@ function generateId(name) {
 }
 
 // Định dạng giá theo dạng 'k' (ví dụ 20 -> 20k)
-function formatK(price) {
+export function formatK(price) {
   if (price === null || price === undefined) return '';
   const num = parseInt(String(price).replace(/[^\d]/g, ''), 10) || 0;
   return `${num}k`;
@@ -897,18 +897,18 @@ window.cancelPayment = function() {
 };
 
 // Hàm xử lý thanh toán
-window.processCheckout = function() {
+window.processCheckout = function(chosenAddress) {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     
     if (cart.length === 0) {
         alert('Giỏ hàng của bạn đang trống!');
         return;
     }
-    
+    localStorage.setItem('tempOrderAddress', chosenAddress);
     showQRModal();
 };
 
-// ***** BẮT ĐẦU SỬA: HÀM COMPLETEPAYMENT *****
+//HÀM COMPLETEPAYMENT
 window.completePayment = function() {
     const qrModal = document.getElementById('qrModal');
     const statusEl = document.getElementById('paymentStatus');
@@ -917,8 +917,8 @@ window.completePayment = function() {
     try {
         // Lấy giỏ hàng
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        
-        // SỬA: Lấy thông tin người dùng hiện tại
+        const chosenAddress = localStorage.getItem('tempOrderAddress') || (currentUser ? currentUser.address : 'N/A');
+        // Lấy thông tin người dùng hiện tại
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
         if (cart.length > 0) {
@@ -941,7 +941,7 @@ window.completePayment = function() {
                 user: {
                     username: currentUser ? currentUser.username : 'Guest',
                     email: currentUser ? currentUser.email : 'N/A',
-                    address: currentUser ? currentUser.address: 'N/A'
+                    address: chosenAddress
                 },
                 status: 'Đang xử lý' // <-- THÊM TRẠNG THÁI MẶC ĐỊNH
             };
@@ -962,7 +962,7 @@ window.completePayment = function() {
 
     // Xóa giỏ hàng (như cũ)
     localStorage.setItem('cart', '[]');
-    
+    localStorage.removeItem('tempOrderAddress');
     // Cập nhật badge (như cũ)
     if (window.updateCartBadge) {
         window.updateCartBadge();
@@ -985,7 +985,7 @@ window.completePayment = function() {
     }, 3000);
 };
 //thanh toán bằng tiền mặt
-window.processCashPayment = function () {
+window.processCashPayment = function (chosenAddress) {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     if (cart.length === 0) {
         alert('Giỏ hàng đang trống!');
@@ -1010,7 +1010,7 @@ window.processCashPayment = function () {
             user: {
                 username: currentUser ? currentUser.username : "Guest",
                 email: currentUser ? currentUser.email : "N/A",
-                address: currentUser ? currentUser.address : "N/A",
+                address: chosenAddress,
             },
             status: "Chờ thanh toán khi nhận hàng"  // ⭐ TRẠNG THÁI KHÁC QR
         };
@@ -1097,10 +1097,7 @@ window.closeOrderDetails = function() {
 };
 function renderPurchaseHistory() {
     const container = document.getElementById('ordersList');
-    if (!container) {
-        console.error("Không tìm thấy phần tử #ordersList"); 
-        return; 
-    }
+    if (!container) return;
     
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
 
@@ -1109,54 +1106,69 @@ function renderPurchaseHistory() {
         return;
     }
 
-    try {
-        container.innerHTML = orders.map(o => { 
-            if (!o || !o.id) return ''; 
+    // Bắt đầu tạo bảng
+    let tableHtml = `
+    <div class="table-responsive">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Mã ĐH</th>
+                    <th>Ngày đặt</th>
+                    <th style="width: 30%;">Địa chỉ</th>
+                    <th>SL</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
-            const totalQty = (o.items || []).reduce((sum, it) => sum + (it.quantity || 1), 0);
-            
+    // Tạo các dòng (rows)
+    const rowsHtml = orders.map(o => { 
+        if (!o || !o.id) return ''; 
 
-            const rawDate = o.date ? o.date.split('T')[0] : 'N/A';
+        const totalQty = (o.items || []).reduce((sum, it) => sum + (it.quantity || 1), 0);
+        const rawDate = o.date ? o.date.split('T')[0] : 'N/A';
+        const address = (o.user && o.user.address) ? o.user.address : '---';
 
+        let statusText;
+        let statusClass;
+        switch (o.status) {
+            case 'Đang giao':
+                statusText = 'Đang giao';
+                statusClass = 'delivering';
+                break;
+            case 'Đã giao':
+                statusText = 'Đã giao';
+                statusClass = 'completed';
+                break;
+            case 'Đã hủy':
+                statusText = 'Đã hủy';
+                statusClass = 'cancelled';
+                break;
+            default:
+                statusText = 'Chờ xử lý';
+                statusClass = 'waiting';
+        }
+        
+        // Render dòng tr
+        return `
+          <tr onclick="showOrderDetails('${o.id}')" title="Xem chi tiết">
+            <td class="fw-bold">${o.id}</td>
+            <td>${rawDate}</td>
+            <td class="address-cell" title="${address}">${address}</td>
+            <td class="text-center">${totalQty}</td>
+            <td class="fw-bold price-text">${o.total}</td>
+            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+          </tr>
+        `;
+    }).join('');
 
-
-            let statusText;
-            let statusClass;
-            switch (o.status) {
-                case 'Đang giao':
-                    statusText = 'Đang giao';
-                    statusClass = 'delivering';
-                    break;
-                case 'Đã giao':
-                    statusText = 'Đã giao';
-                    statusClass = 'completed';
-                    break;
-                case 'Đã hủy':
-                    statusText = 'Đã hủy';
-                    statusClass = 'cancelled';
-                    break;
-                case 'Chờ xử lý': 
-                default:
-                    statusText = 'Chờ xử lý';
-                    statusClass = 'waiting';
-            }
-            
-            return `
-              <div class="order-row">
-                <span class="order-row-id">${o.id}</span>
-                <span class="order-row-date">${rawDate}</span> 
-                <span class="order-row-qty">${totalQty} sp</span>
-                <span class="order-row-total">${o.total}</span>
-                <span class="order-status ${statusClass}">${statusText}</span>
-              </div>
-            `;
-        }).join('');
-    } catch (e) {
-        console.error("Lỗi nghiêm trọng khi render lịch sử mua hàng:", e);
-        container.innerHTML = '<div class="empty-orders" style="color:red;">Lỗi khi tải lịch sử. Vui lòng F5.</div>';
-    }
+    // Đóng bảng
+    tableHtml += rowsHtml + `</tbody></table></div>`;
+    
+    container.innerHTML = tableHtml;
 }
-
 
 // ===== Hien thi noi dung market =====
 let itemsPerPage = 8;
@@ -1180,7 +1192,7 @@ function clearFilters() {
   // Hiện thị tất cả item từ market
   filteredResults = [];
   // Giữ lại filter bằng tên 
-  for (const category of Object.values(market)) {
+  for (const category of Object.values(marketItems)) {
     let items = category.items;
 
     if (searchQuery.length > 0) {
@@ -1197,47 +1209,46 @@ function clearFilters() {
 }
 
 
-// Filter items
 function applyFilters() {
     const minPrice = document.getElementById('minPrice').value.trim();
     const maxPrice = document.getElementById('maxPrice').value.trim();
     const releaseYear = document.getElementById('releaseYear').value.trim();
-    const searchQuery = document.getElementById('searchQuery').value.trim().toLowerCase();
+    
+    // Lấy giá trị tìm kiếm từ cả 2 ô
+    const mainSearch = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim().toLowerCase() : "";
+    const filterSearch = document.getElementById('searchQuery') ? document.getElementById('searchQuery').value.trim().toLowerCase() : "";
+    const searchQuery = mainSearch || filterSearch;
+    
     const selectedCategory = document.getElementById('selectedCategory').value;
 
     filteredResults = [];
-
-    // duyệt tất cả category
-    for (const [categoryName, categoryData] of Object.entries(market)) {
-
-        // nếu chọn category thì chỉ lấy đúng category đó
+    for (const [categoryName, categoryData] of Object.entries(marketItems)) {
         if (selectedCategory && selectedCategory !== categoryName) continue;
+        
+        // === [QUAN TRỌNG] BỎ QUA NẾU DANH MỤC BỊ ADMIN ẨN ===
+        if (categoryData.hidden === true) continue; 
+        // ====================================================
 
         const items = categoryData.items.filter(item => {
-
-            const priceValue = parseInt(item.price); // giá dạng số
+            if(item.active === false) return false;
+            const priceValue = parseInt(String(item.price).replace(/[^\d]/g, '')) || 0;
             const yearValue = parseInt(item.releaseYear);
 
-            // lọc theo giá min
             if (minPrice && priceValue < parseInt(minPrice)) return false;
-
-            // lọc theo giá max
             if (maxPrice && priceValue > parseInt(maxPrice)) return false;
-
-            // lọc theo năm xuất bản
             if (releaseYear && yearValue !== parseInt(releaseYear)) return false;
-
-            // lọc theo tên sản phẩm
             if (searchQuery && !item.name.toLowerCase().includes(searchQuery)) return false;
-
             return true;
         });
-
         filteredResults.push(...items);
     }
-
-    renderMarketItems(1); // render lại trang 1
+    renderMarketItems(1);
 }
+
+document.getElementById("searchInput")?.addEventListener("input", function () {
+    // Khi gõ vào ô chính, gọi hàm lọc chung chứ không tự lọc riêng
+    applyFilters();
+});
 
 
 // Hiện thị item trong item-container
@@ -1587,37 +1598,51 @@ document.querySelector('.filter-button')?.addEventListener('click', function () 
 
 // Load lại trang
 document.addEventListener("DOMContentLoaded", () => {
-  // Load all items by default
+  const latestData = localStorage.getItem("adminProducts");
+  // Nếu chưa có trong storage thì dùng biến market mặc định
+  const currentMarketData = latestData ? JSON.parse(latestData) : market; 
+
+
   filteredResults = [];
-  for (const category of Object.values(market)) {
-    filteredResults.push(...category.items);
+  
+  for (const category of Object.values(currentMarketData)) {
+    // bỏ qua các danh mục bị ẩn
+    if (category.hidden === true) continue; 
+    //chỉ lấy sản phẩm được hiện và ko bị xóa
+    if (category.items) {
+        const activeItems = category.items.filter(item => item.active !== false);
+        filteredResults.push(...activeItems);
+    }
   }
+  
+  // Render trang 1
   renderMarketItems(1);
 
   // Bind filter button
   const filterBtn = document.querySelector('.filter-button');
   const filterPanel = document.getElementById('filter-panel');
   const applyBtn = document.getElementById('apply-filter-button');
-  const clearBtn = document.getElementById('clear-filter-button')
+  const clearBtn = document.getElementById('clear-filter-button');
+  
 
-  // Populate category dropdown from market keys
- const categorySelect = document.getElementById('selectedCategory');
-if (categorySelect) {
-
-    // thêm option tất cả
+  const categorySelect = document.getElementById('selectedCategory');
+  if (categorySelect) {
+    categorySelect.innerHTML = ''; 
     const allOption = document.createElement('option');
     allOption.value = "";
     allOption.textContent = "Tất cả";
     categorySelect.appendChild(allOption);
 
-    // thêm các category
-    for (const categoryName of Object.keys(market)) {
+    Object.keys(marketItems).forEach(cat => {
+
+        if (marketItems[cat].hidden === true) return;
+        
         const option = document.createElement('option');
-        option.value = categoryName;
-        option.textContent = categoryName;
+        option.value = cat; 
+        option.textContent = cat;
         categorySelect.appendChild(option);
-    }
-}
+    });
+  }
 
 
   if (applyBtn) {
@@ -1651,8 +1676,11 @@ document.getElementById("searchInput")?.addEventListener("input", function () {
 
     filteredResults = [];
 
-    for (const category of Object.values(market)) {
+    const searchData = localStorage.getItem("adminProducts") ? JSON.parse(localStorage.getItem("adminProducts")) : (typeof marketItems !== 'undefined' ? marketItems : {});
+    for (const category of Object.values(searchData)) {
+      if (category.hidden === true) continue; 
         const items = category.items.filter(item =>
+            item.active!=false &&
             item.name.toLowerCase().includes(keyword)
         );
         filteredResults.push(...items);
@@ -1663,3 +1691,93 @@ document.getElementById("searchInput")?.addEventListener("input", function () {
 });
 
 });
+
+// Biến tạm để lưu trữ hàm thanh toán (QR hoặc Cash)
+let pendingPaymentFunction = null;
+
+// Hàm mở Modal Địa chỉ 
+window.showAddressModal = function(paymentFunction) {
+    // Lấy thông tin người dùng hiện tại
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    //  KIỂM TRA ĐĂNG NHẬP ===
+    if (!currentUser) {
+        if(confirm("Bạn cần đăng nhập để thực hiện thanh toán. Đi đến trang đăng nhập ngay?")) {
+            // Kiểm tra xem đang ở trang nào để chuyển hướng đúng đường dẫn
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/pages/')) {
+                // Đang ở trong thư mục pages (ví dụ market.html)
+                window.location.href = 'auth.html';
+            } else {
+                // Đang ở trang chủ (index.html)
+                window.location.href = 'pages/auth.html';
+            }
+        }
+        return; //không mở modal địa chỉ
+    }
+    // =====================================
+
+    //Lưu lại hàm thanh toán sẽ gọi sau
+    pendingPaymentFunction = paymentFunction;
+    
+    const modal = document.getElementById('addressModal');
+    const defaultRadio = document.getElementById('useDefaultAddress');
+    const defaultLabel = document.getElementById('defaultAddressLabel');
+    const newRadio = document.getElementById('useNewAddress');
+    const newAddressInput = document.getElementById('newAddressInput');
+
+    //Tải địa chỉ mặc định (nếu có)
+    if (currentUser && currentUser.address && currentUser.address.trim() !== "") {
+        defaultLabel.textContent = `Sử dụng địa chỉ mặc định: ${currentUser.address}`;
+        defaultRadio.disabled = false;
+        defaultRadio.checked = true;
+        newRadio.checked = false;
+    } else {
+        // Nếu không có địa chỉ mặc định, ép người dùng nhập địa chỉ mới
+        defaultLabel.textContent = "Không có địa chỉ mặc định (Vui lòng nhập địa chỉ mới)";
+        defaultRadio.disabled = true;
+        defaultRadio.checked = false;
+        newRadio.checked = true;
+    }
+    
+    //Reset và hiển thị modal
+    newAddressInput.value = '';
+    if(modal) modal.style.display = 'flex';
+};
+
+// Hàm đóng Modal Địa chỉ
+window.closeAddressModal = function() {
+    document.getElementById('addressModal').style.display = 'none';
+    pendingPaymentFunction = null; // Hủy hàm đang chờ
+}
+
+// Hàm xác nhận địa chỉ 
+window.handleAddressConfirmation = function() {
+    const useDefault = document.getElementById('useDefaultAddress').checked;
+    const newAddress = document.getElementById('newAddressInput').value.trim();
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    let chosenAddress = "";
+
+    if (useDefault) {
+        chosenAddress = currentUser.address;
+    } else {
+        chosenAddress = newAddress;
+    }
+
+    // Kiểm tra xem người dùng đã chọn/nhập địa chỉ chưa
+    if (!chosenAddress || chosenAddress.trim() === "") {
+        alert('Vui lòng cung cấp địa chỉ giao hàng!');
+        return;
+    }
+    
+    // Đóng modal địa chỉ
+    const paymentAction=pendingPaymentFunction;
+    closeAddressModal();
+    
+    // Gọi hàm thanh toán (QR hoặc Cash) đã lưu
+    // và TRUYỀN địa chỉ đã chọn vào
+    if (typeof paymentAction === 'function') {
+        paymentAction(chosenAddress);
+    }
+}

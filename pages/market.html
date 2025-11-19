@@ -205,7 +205,7 @@
         </div>
     </div>
 
-    <div class="cart-overlay" style="display: none;"></div>
+    <div class="cart-overlay" style="display: none;" onclick="closeCart()"></div>
     <div class="cart-container" style="display: none;">
         <div class="cart-header">
             <div class="cart-title">
@@ -226,17 +226,14 @@
             <span id="total-amount">0k</span>
         </div>
 
-        <div class="cart-buttons">
-            <button id="checkout-btn" onclick="processCheckout()">
-                <i class="fas fa-qrcode"></i>
-                <span>Thanh toán bằng QR</span>
-            </button>
-
-            <button class="cash-payment-btn" onclick="processCashPayment()">
-                <i class="fas fa-money-bill-wave"></i>
-                Thanh toán khi nhận hàng
-            </button>
-        </div>
+        <button id="checkout-btn" onclick="showAddressModal(processCheckout)">
+    <i class="fas fa-qrcode"></i>
+    <span>Thanh toán bằng QR</span>
+</button>
+<button class="cash-payment-btn" onclick="showAddressModal(processCashPayment)">
+    <i class="fas fa-money-bill-wave"></i>
+    Thanh toán khi nhận hàng
+</button>
     </div>
         </div>
 
@@ -265,6 +262,39 @@
             </div>
         </div>
     </div>
+    <div class="qr-modal" id="addressModal" style="display: none;">
+    <div class="qr-modal-overlay" onclick="closeAddressModal()"></div>
+    <div class="qr-modal-content" style="max-width: 500px;">
+        <button class="qr-close-btn" onclick="closeAddressModal()">×</button>
+        <h2>Xác nhận địa chỉ giao hàng</h2>
+        
+        <div class="address-options" style="text-align: left; margin: 20px 0;">
+            
+            <div class="address-option">
+                <input type="radio" id="useDefaultAddress" name="addressChoice" value="default" checked>
+                <label for="useDefaultAddress" id="defaultAddressLabel" style="color: #333; font-size: 0.9em;">
+                    Sử dụng địa chỉ mặc định...
+                </label>
+            </div>
+            
+            <div class="address-option" style="margin-top: 15px;">
+                <input type="radio" id="useNewAddress" name="addressChoice" value="new">
+                <label for="useNewAddress" style="color: #333; font-size: 0.9em;">
+                    Sử dụng địa chỉ mới:
+                </label>
+                <input type="text" id="newAddressInput" placeholder="Nhập số nhà, tên đường, phường, quận..." 
+                       style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+
+        </div>
+        
+        <div style="display:flex; gap:12px; justify-content:center; margin-top:12px;">
+            <button class="confirm-payment-btn" onclick="handleAddressConfirmation()">
+                Xác nhận & Tiếp tục
+            </button>
+        </div>
+    </div>
+</div>
     <div class="orders-modal" id="ordersModal" style="display: none;">
     <div class="orders-modal-overlay" onclick="closePurchaseHistory()"></div>
     <div class="orders-modal-content">

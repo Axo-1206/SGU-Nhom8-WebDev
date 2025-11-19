@@ -202,8 +202,15 @@
                 <h2>Danh sách đơn hàng</h2>
             </div>
 
-            <div class="admin-controls">
-                <input type="text" id="order-search-input" placeholder="Tìm theo ID, tên KH, hoặc email...">
+            <div>
+                <label>Lọc theo trạng thái:</label>
+                <select id="order-filter-status" class="order-filter">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="Chờ xử lý">Chờ xử lý</option>
+                    <option value="Đang giao">Đang giao</option>
+                    <option value="Đã giao">Đã giao</option>
+                    <option value="Đã hủy">Đã hủy</option>
+                </select>
             </div>
 
             <div class="table-wrapper">
@@ -381,6 +388,33 @@
             </div>
         </div>
     </div>
+    <div id="viewOrderModal" class="modal-overlay">
+    <div class="modal-content">
+        
+        <button type="button" class="closef">&times;</button>
+        
+        <h2 id="view-order-title" >Chi tiết đơn hàng</h2>
+        
+        <div id="view-order-details">
+            </div>
+
+        <h3>Danh sách sản phẩm</h3>
+        
+        <div class="table-wrapper">
+            <table class="slip-products-table" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                    </tr>
+                </thead>
+                <tbody id="view-order-products-tbody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>

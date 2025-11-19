@@ -390,14 +390,17 @@ function populateAccountForm() {
         const user = JSON.parse(saved);
         const nameEl = document.getElementById('accountName');
         const emailEl = document.getElementById('accountEmail');
+        const addressEl = document.getElementById('address'); 
+
         if (nameEl) nameEl.value = user.name || '';
         if (emailEl) emailEl.value = user.email || '';
+        if (addressEl) addressEl.value = user.address || '';
     } catch (e) {
         console.error('populateAccountForm error', e);
     }
 }
 
-// THAY THẾ TOÀN BỘ HÀM NÀY
+
 function handleSaveAccountSettings(event) {
     event.preventDefault();
     const name = document.getElementById('accountName').value.trim();
@@ -407,7 +410,8 @@ function handleSaveAccountSettings(event) {
     const currentPassword = document.getElementById('accountCurrentPassword').value;
     const newPassword = document.getElementById('accountPassword').value;
     const passwordConfirm = document.getElementById('accountPasswordConfirm').value;
-    
+    const address = document.getElementById('address').value.trim();
+
     const msg = document.getElementById('accountMsg');
     if (msg) msg.textContent = ''; // Xóa thông báo cũ
 
@@ -476,6 +480,7 @@ function handleSaveAccountSettings(event) {
 
     user.name = name;
     user.email = email;
+    user.address = address
     // Chỉ cập nhật mật khẩu MỚI nếu nó đã được nhập
     if (newPassword) {
         user.password = newPassword;

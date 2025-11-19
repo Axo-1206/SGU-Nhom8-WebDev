@@ -174,9 +174,13 @@
 	text-decoration: none;
     color: rgb(241, 247, 246);
 	background-color: rgb(3, 98, 76);
+    padding: 1em 2em;
+    transition: background-color 150ms ease;
 	justify-content: center;
     align-items: center;
     cursor: pointer;
+    border: none;
+
 }
 .cart-navbar-btn:hover{
     background-color:rgb(2, 76, 64);
@@ -840,34 +844,6 @@
     color: #333;
 }
 
-.orders-list { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 16px; 
-    margin-top: 20px;
-    align-items: center;
-}
-
-.order-card-centered {
-    border: 1px solid #e0e0e0;
-    padding: 28px;
-    border-radius: 12px;
-    background: #ffffff;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    width: 100%;
-    max-width: 600px;
-    text-align: center;
-}
-
-.order-card-centered:hover {
-    box-shadow: 0 8px 16px rgba(139, 20, 249, 0.12);
-    border-color: rgba(139, 20, 249, 0.2);
-}
-
-.order-card-header {
-    margin-bottom: 20px;
-}
 
 .order-id {
     font-weight: 700;
@@ -876,76 +852,6 @@
     letter-spacing: 0.5px;
 }
 
-.order-thumbnails {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin: 24px 0;
-    padding: 0;
-}
-
-.order-item-thumbnail {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #f5f5f5;
-    border: 1px solid #e0e0e0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.order-item-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.order-stats {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 20px 0;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-    margin: 20px 0;
-}
-
-.stat-item {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex: 1;
-}
-
-.stat-label {
-    font-size: 0.8rem;
-    color: #999;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.stat-value {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #333;
-}
-
-.stat-divider {
-    width: 1px;
-    height: 30px;
-    background: #e0e0e0;
-}
-
-.order-details-link {
-    margin-top: 16px;
-    font-size: 0.85rem;
-    color: #8b14f9;
-    font-weight: 500;
-}
 
 .empty-orders { 
     text-align: center; 
@@ -1968,4 +1874,163 @@
         width: 26px;
         height: 26px;
     }
+}
+
+/* Reset container danh sách */
+.orders-list {
+    display: block;
+    padding: 0;
+    margin-top: 10px;
+}
+
+/* Wrapper để cuộn ngang trên điện thoại */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    background: #fff;
+}
+
+/* Định dạng bảng chính */
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px; /* Đảm bảo bảng không bị co quá nhỏ */
+    font-size: 14px;
+}
+
+/* Phần đầu bảng (Header) */
+.history-table thead th {
+    background-color: #f4f6f8;
+    color: #454f5b;
+    font-weight: 600;
+    text-align: left;
+    padding: 16px 12px;
+    border-bottom: 2px solid #dfe3e8;
+    white-space: nowrap;
+}
+
+/* Các dòng dữ liệu */
+.history-table tbody tr {
+    border-bottom: 1px solid #f1f1f1;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.history-table tbody tr:hover {
+    background-color: #f9fafb; /* Hiệu ứng hover sáng nhẹ */
+}
+
+.history-table td {
+    padding: 14px 12px;
+    vertical-align: middle;
+    color: #333;
+}
+
+/* Style cho Mã đơn hàng */
+.order-id-cell {
+    font-weight: 700;
+    color: #212b36;
+}
+
+/* Style cho Giá tiền */
+.price-cell {
+    font-weight: 700;
+    color: #8b14f9;
+}
+
+/* Cột địa chỉ: Giới hạn độ dài, hiện dấu ... */
+.address-cell {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #637381;
+}
+
+/* Badge trạng thái */
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-badge.waiting {
+    background-color: #fff7cd;
+    color: #b78103;
+}
+
+.status-badge.delivering {
+    background-color: #d0f2ff;
+    color: #0c53b7;
+}
+
+.status-badge.completed {
+    background-color: #e4f8dd;
+    color: #118d57;
+}
+
+.status-badge.cancelled {
+    background-color: #ffe7d9;
+    color: #b72136;
+}
+
+.order-books-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 0;
+}
+
+
+.book-card-large {
+    display: flex;
+    align-items: flex-start; 
+    gap: 15px;
+    border: 1px solid #eee;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.book-cover {
+    width: 80px;       
+    height: 110px;     
+    flex-shrink: 0;    /* Không cho ảnh bị co lại */
+    overflow: hidden;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+}
+
+/*Ảnh bên trong: Bắt buộc lấp đầy khung nhưng không bị méo */
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cắt ảnh để vừa khung  */
+    display: block;
+}
+
+/* 5. Phần thông tin bên phải */
+.book-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-grow: 1;
+}
+
+.book-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.4;
+}
+
+.book-qty, .book-price {
+    font-size: 14px;
+    color: #555;
 }
