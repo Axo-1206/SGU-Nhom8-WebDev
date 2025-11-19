@@ -1197,81 +1197,47 @@ function clearFilters() {
 }
 
 
-// Filter items
 function applyFilters() {
-  const searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
-  const selectedCategory = document.getElementById('selectedCategory').value;
-  const minPrice = parseInt(document.getElementById('minPrice').value) || null;
-  const maxPrice = parseInt(document.getElementById('maxPrice').value) || null;
-  const releaseYear = parseInt(document.getElementById('releaseYear').value) || null;
-
-  filteredResults = [];
-
-  for (const [categoryName, categoryData] of Object.entries(market)) {
-    let items = categoryData.items;
-
-    //  1: Kiểm tra active
-    items = items.filter(item => item.active);
-
-    if (!selectedCategory || categoryName == selectedCategory || selectedCategory == "-- Chọn danh mục --") {
-      filteredResults.push(...items); 
-      continue;
-    }
-
-     //  2: Tìm kiếm theo tên
-    if (searchQuery.length > 0) {
-      items = categoryData.items.filter(item =>
-        item.name.toLowerCase().includes(searchQuery)
-      );
-      filteredResults.push(...items);
-    } 
-
-    //  4: Tìm kiếm theo giá
-    if (minPrice || maxPrice) {
-      items = categoryData.items.filter(item => {
-        const price = parseInt(item.price);
-        return (!minPrice || price >= minPrice) && (!maxPrice || price <= maxPrice);
-      });
-      filteredResults.push(...items);
-    }
-
-    //  5: Tìm kiếm theo năm
-    if (releaseYear) {
-      items = categoryData.items.filter(item => item.releaseYear === releaseYear);
-      filteredResults.push(...items);
-    }
-
-
-    // //  2: Tìm kiếm theo tên
-    // if (searchQuery.length > 0) {
-    //   items = items.filter(item =>
-    //     item.name.toLowerCase().includes(searchQuery)
-    //   );
-    // } else {
-    //   //  3: Bỏ qua filter danh mục nếu tìm kiếm theo tên\
-    //   if (selectedCategory && selectedCategory !== "-- Chọn danh mục --" && categoryName !== selectedCategory) {
-    //     continue; // Skip this category
-    //   }
-    // }
-
-    // //  4: Tìm kiếm theo giá
-    // if (minPrice || maxPrice) {
-    //   items = items.filter(item => {
-    //     const price = parseInt(item.price);
-    //     return (!minPrice || price >= minPrice) && (!maxPrice || price <= maxPrice);
-    //   });
-    // }
-
-    // //  5: Tìm kiếm theo năm
-    // if (releaseYear) {
-    //   items = items.filter(item => item.releaseYear === releaseYear);
-    // }
-
+    const minPrice = document.getElementById('minPrice').value.trim();
+    const maxPrice = document.getElementById('maxPrice').value.trim();
+    const releaseYear = document.getElementById('releaseYear').value.trim();
     
-  }
+    // Lấy giá trị tìm kiếm từ cả 2 ô
+    const mainSearch = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim().toLowerCase() : "";
+    const filterSearch = document.getElementById('searchQuery') ? document.getElementById('searchQuery').value.trim().toLowerCase() : "";
+    const searchQuery = mainSearch || filterSearch;
+    
+    const selectedCategory = document.getElementById('selectedCategory').value;
 
-  renderMarketItems(1);
+    filteredResults = [];
+    for (const [categoryName, categoryData] of Object.entries(marketItems)) {
+        if (selectedCategory && selectedCategory !== categoryName) continue;
+        
+        // === [QUAN TRỌNG] BỎ QUA NẾU DANH MỤC BỊ ADMIN ẨN ===
+        if (categoryData.hidden === true) continue; 
+        // ====================================================
+
+        const items = categoryData.items.filter(item => {
+            if(item.active === false) return false;
+            const priceValue = parseInt(String(item.price).replace(/[^\d]/g, '')) || 0;
+            const yearValue = parseInt(item.releaseYear);
+
+            if (minPrice && priceValue < parseInt(minPrice)) return false;
+            if (maxPrice && priceValue > parseInt(maxPrice)) return false;
+            if (releaseYear && yearValue !== parseInt(releaseYear)) return false;
+            if (searchQuery && !item.name.toLowerCase().includes(searchQuery)) return false;
+            return true;
+        });
+        filteredResults.push(...items);
+    }
+    renderMarketItems(1);
 }
+
+document.getElementById("searchInput")?.addEventListener("input", function () {
+    // Khi gõ vào ô chính, gọi hàm lọc chung chứ không tự lọc riêng
+    applyFilters();
+});
+
 
 // Hiện thị item trong item-container
 function renderMarketItems(page = 1) {
@@ -1316,37 +1282,123 @@ function renderMarketItems(page = 1) {
 
 // Hiện thị thanh trang
 function renderPagination(totalItems, currentPage, itemsPerPage) {
-	const totalPages = Math.ceil(totalItems / itemsPerPage); 
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const paginationContainer = document.querySelector(".pagination");
+    paginationContainer.innerHTML = "";
 
-	const paginationContainer = document.querySelector(".pagination");
-	paginationContainer.innerHTML = "";
+    // 1. TÍNH TOÁN SỐ LƯỢNG NÚT DỰA TRÊN CHIỀU RỘNG MÀN HÌNH (RESPONSIVE)
+    let maxButtons;
+    const screenWidth = window.innerWidth;
+    
+    if (screenWidth > 1024) {
+        maxButtons = 7; // Màn hình lớn/Desktop
+    } else if (screenWidth > 600) {
+        maxButtons = 5; // Tablet
+    } else {
+        maxButtons = 3; // Mobile
+    }
+    
+    // Nếu số trang <= 1 thì ẩn thanh trang
+    if (totalPages <= 1) {
+        paginationContainer.style.display = "none";
+        return;
+    }
+    paginationContainer.style.display = "flex";
 
-  // Nếu số trang == 1 thì không hiện  thị thanh trang
-  if (totalPages <= 1) {
-    paginationContainer.style.display = "none";
-    return;
-  }
-  paginationContainer.style.display = "flex";
+    // Hàm tạo nút
+    const createButton = (label, page, disabled = false, isEllipsis = false) => {
+        const btn = document.createElement("button");
+        btn.textContent = label;
+        btn.disabled = disabled;
+        btn.classList.add("page-btn");
+        if (page === currentPage && !isEllipsis) btn.classList.add("active");
+        
+        if (isEllipsis) {
+             btn.classList.add("ellipsis-btn"); 
+             
+             // LOGIC NHẢY KHỐI (BLOCK JUMPING) MỚI
+             btn.addEventListener("click", () => {
+                let jumpPage;
+                
+                // Nếu nút '...' nằm ở bên trái (page < currentPage) -> nhảy lùi
+                if (page < currentPage) {
+                    // Nhảy lùi một khối (maxButtons)
+                    jumpPage = Math.max(1, currentPage - maxButtons); 
+                } 
+                // Nếu nút '...' nằm ở bên phải (page > currentPage) -> nhảy tiến
+                else {
+                    // Nhảy tiến một khối (maxButtons)
+                    jumpPage = Math.min(totalPages, currentPage + maxButtons);
+                }
+                
+                // Chỉ chuyển trang nếu trang đích khác trang hiện tại
+                if (jumpPage !== currentPage) {
+                    renderMarketItems(jumpPage);
+                }
+             });
+        } else {
+             btn.addEventListener("click", () => {
+                renderMarketItems(page);
+             });
+        }
+        return btn;
+    };
 
-	const createButton = (label, page, disabled = false) => {
-		const btn = document.createElement("button");
-		btn.textContent = label;
-		btn.disabled = disabled;
-		btn.classList.add("page-btn");
-		if (page === currentPage) btn.classList.add("active");
-		btn.addEventListener("click", () => {
-		renderMarketItems(page);
-		});
-		return btn;
- 	};
-
+    // 2. Nút PREVIOUS
     paginationContainer.appendChild(createButton("Previous", currentPage - 1, currentPage === 1));
 
-	for (let i = 1; i <= totalPages; i++) {
-		paginationContainer.appendChild(createButton(i, i));
-	}
+    
+    let startPage = 1;
+    let endPage = totalPages;
 
-	paginationContainer.appendChild(createButton("Next", currentPage + 1, currentPage === totalPages));
+    // Logic rút gọn dãy số trang (sử dụng maxButtons đã tính toán)
+    if (totalPages > maxButtons) {
+        // Luôn giữ trang hiện tại ở giữa
+        const half = Math.floor(maxButtons / 2);
+        
+        startPage = currentPage - half;
+        endPage = currentPage + half;
+
+        // Xử lý tràn lề trái
+        if (startPage < 1) {
+            startPage = 1;
+            endPage = maxButtons;
+        }
+
+        // Xử lý tràn lề phải
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = totalPages - maxButtons + 1;
+        }
+        // Đảm bảo startPage không nhỏ hơn 1 
+        if (startPage < 1) startPage = 1; 
+    }
+    
+    // 3. Hiển thị trang đầu tiên và dấu "..." bên trái nếu cần
+    if (startPage > 1) {
+        paginationContainer.appendChild(createButton(1, 1));
+        if (startPage > 2) {
+            // Giá trị page 1 được sử dụng để xác định đây là '...' bên trái (page < currentPage)
+            paginationContainer.appendChild(createButton("...", 1, false, true)); 
+        }
+    }
+
+    // 4. Các nút số trang chính
+    for (let i = startPage; i <= endPage; i++) {
+        paginationContainer.appendChild(createButton(i, i));
+    }
+
+    // 5. Hiển thị trang cuối cùng và dấu "..." bên phải nếu cần
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            // Giá trị page totalPages được sử dụng để xác định đây là '...' bên phải (page > currentPage)
+            paginationContainer.appendChild(createButton("...", totalPages, false, true)); 
+        }
+        paginationContainer.appendChild(createButton(totalPages, totalPages));
+    }
+
+    // 6. Nút NEXT
+    paginationContainer.appendChild(createButton("Next", currentPage + 1, currentPage === totalPages));
 }
 
 function showProductDetail(item) {
@@ -1545,18 +1597,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterBtn = document.querySelector('.filter-button');
   const filterPanel = document.getElementById('filter-panel');
   const applyBtn = document.getElementById('apply-filter-button');
-  const clearBtn = document.getElementById('clear-filter-button')
+  const clearBtn = document.getElementById('clear-filter-button');
+  
 
-  // Populate category dropdown from market keys
   const categorySelect = document.getElementById('selectedCategory');
   if (categorySelect) {
-    for (const categoryName of Object.keys(market)) {
-      const option = document.createElement('option');
-      option.value = categoryName;
-      option.textContent = categoryName;
-      categorySelect.appendChild(option);
-    }
+    categorySelect.innerHTML = ''; 
+    const allOption = document.createElement('option');
+    allOption.value = "";
+    allOption.textContent = "Tất cả";
+    categorySelect.appendChild(allOption);
+
+    Object.keys(marketItems).forEach(cat => {
+
+        if (marketItems[cat].hidden === true) return;
+        
+        const option = document.createElement('option');
+        option.value = cat; 
+        option.textContent = cat;
+        categorySelect.appendChild(option);
+    });
   }
+
 
   if (applyBtn) {
     applyBtn.addEventListener('click', applyFilters);
@@ -1576,23 +1638,70 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
   updateCartBadge()
+  // ======== FIX SEARCH KHÔNG RELOAD ========
+
+// Ngăn form tự submit
+document.querySelector(".search-bar")?.addEventListener("submit", function(e) {
+    e.preventDefault();
 });
+
+// Lắng nghe search realtime
+document.getElementById("searchInput")?.addEventListener("input", function () {
+    const keyword = this.value.trim().toLowerCase();
+
+    filteredResults = [];
+
+    for (const category of Object.values(market)) {
+        const items = category.items.filter(item =>
+            item.name.toLowerCase().includes(keyword)
+        );
+        filteredResults.push(...items);
+    }
+
+    // render trang 1 khi search
+    renderMarketItems(1);
+});
+
+});
+
 // Biến tạm để lưu trữ hàm thanh toán (QR hoặc Cash)
 let pendingPaymentFunction = null;
 
 // Hàm mở Modal Địa chỉ (được gọi bởi nút trong giỏ hàng)
+// [Trong file src/marketController.js]
+// Tìm và thay thế toàn bộ hàm window.showAddressModal bằng đoạn này:
+
 window.showAddressModal = function(paymentFunction) {
-    // 1. Lưu lại hàm thanh toán sẽ gọi sau
+    // 1. Lấy thông tin người dùng hiện tại
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    // === THÊM MỚI: KIỂM TRA ĐĂNG NHẬP ===
+    if (!currentUser) {
+        if(confirm("Bạn cần đăng nhập để thực hiện thanh toán. Đi đến trang đăng nhập ngay?")) {
+            // Kiểm tra xem đang ở trang nào để chuyển hướng đúng đường dẫn
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/pages/')) {
+                // Đang ở trong thư mục pages (ví dụ market.html)
+                window.location.href = 'auth.html';
+            } else {
+                // Đang ở trang chủ (index.html)
+                window.location.href = 'pages/auth.html';
+            }
+        }
+        return; // Dừng lại, không mở modal địa chỉ
+    }
+    // =====================================
+
+    // 2. Lưu lại hàm thanh toán sẽ gọi sau (giữ nguyên logic cũ)
     pendingPaymentFunction = paymentFunction;
     
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const modal = document.getElementById('addressModal');
     const defaultRadio = document.getElementById('useDefaultAddress');
     const defaultLabel = document.getElementById('defaultAddressLabel');
     const newRadio = document.getElementById('useNewAddress');
     const newAddressInput = document.getElementById('newAddressInput');
 
-    // 2. Tải địa chỉ mặc định (nếu có)
+    // 3. Tải địa chỉ mặc định (nếu có)
     if (currentUser && currentUser.address && currentUser.address.trim() !== "") {
         defaultLabel.textContent = `Sử dụng địa chỉ mặc định: ${currentUser.address}`;
         defaultRadio.disabled = false;
@@ -1606,10 +1715,10 @@ window.showAddressModal = function(paymentFunction) {
         newRadio.checked = true;
     }
     
-    // 3. Reset và hiển thị modal
+    // 4. Reset và hiển thị modal
     newAddressInput.value = '';
-    modal.style.display = 'flex';
-}
+    if(modal) modal.style.display = 'flex';
+};
 
 // Hàm đóng Modal Địa chỉ
 window.closeAddressModal = function() {

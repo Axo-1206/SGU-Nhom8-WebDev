@@ -39,20 +39,109 @@
     color: black;
 }
 
-.filter-panel {
+#filter-panel {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
-    border: 1px solid #ccc;
-    padding: 30px 20px 30px 20px;
+    top: 0;
+    left: 0;
+    width: 320px;
+    height: 100%;
+    background: #ffffff;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.15);
+    padding: 20px;
     z-index: 9999;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    width: 300px;
-
     display: none;
+    flex-direction: column;
+    animation: slideIn 0.3s ease forwards;
+    overflow-y: auto;
+    border-right: 1px solid #e6e6e6;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.filter-panel h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+/* Filter Field */
+.filter-box {
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    margin-bottom: 18px;
+}
+
+.filter-box label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.filter-box input,
+.filter-box select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    border: 1px solid #cfcfcf;
+    outline: none;
+    transition: 0.2s;
+}
+
+.filter-box input:focus,
+.filter-box select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 3px rgba(0,123,255,0.4);
+}
+
+/* Buttons */
+.apply-filter-button {
+    background: #007bff;
+    padding: 12px;
+    width: 100%;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.apply-filter-button:hover {
+    background: #005ec7;
+}
+
+.reset-filter-button {
+    margin-top: 8px;
+    padding: 10px;
+    width: 100%;
+    background: #f1f1f1;
+    color: #444;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.reset-filter-button:hover {
+    background: #e4e4e4;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    #filter-panel {
+        width: 90%;
+    }
 }
 
 .search-bar {
@@ -198,11 +287,10 @@
 
 /* Phân trang */
 .pagination {
-    align-self: center;
     position: sticky;
-    bottom: 30px; /* Khoảng cách từ đáy màn hình */
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 30px; 
+    width: fit-content;
+    margin: 0 auto 30px auto;
     display: flex;
     justify-content: center;
     gap: 12px;
@@ -211,9 +299,7 @@
     padding: 12px 30px;
     border-radius: 40px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    z-index: 100; /* Giảm z-index để không đè lên modal */
-    width: fit-content;
-    margin: 0 auto 30px auto; /* Thêm margin bottom để không sát footer */
+    z-index: 9;
 }
 
 .page-btn {
@@ -244,6 +330,23 @@
     cursor: not-allowed;
 }
 
+/* marketPage.css (Responsive cho Mobile) */
+
+@media (max-width: 768px) {
+    .pagination {
+        position: sticky; 
+        bottom: 20px;
+        width: fit-content;
+        margin: 0 auto 20px auto;
+        left: unset !important;
+        transform: none !important;
+        padding: 8px 10px; 
+        gap: 6px;
+        border-radius: 16px;
+        justify-content: center;
+    }
+}
+
 /* 📱 Responsive */
 @media (max-width: 1024px) {
     .market-item {
@@ -261,10 +364,6 @@
         padding: 10px;
     }
 
-    body {
-        background: rgb(2, 27, 26);
-    }
-
     .market-item {
         flex: 1 1 calc(50% - 24px);
     }
@@ -272,9 +371,6 @@
 }
 
 @media (max-width: 480px) {
-    body {
-        background: rgb(2, 27, 26);
-    }
 .filter-bars {
     display: flex;
     justify-content: center; /* Căn giữa các ô tìm kiếm bên trong nó */
@@ -1793,7 +1889,7 @@
     border: none;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-    z-index: 999;
+    z-index: 9;
     display: flex;
     align-items: center;
     justify-content: center;

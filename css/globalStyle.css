@@ -23,10 +23,12 @@ html{
 	scroll-behavior: smooth;
 }
 body{
+    display: flex;
+    flex-direction: column;
 	min-height: 100vh;
-	min-height: 100dvh;
 	background-image: url("../assets/images/backgroundimage.jpg");
 	background-attachment: fixed;
+	margin: 0;
 }
 main{
   	padding: min(1em, 2%);
@@ -201,9 +203,13 @@ nav a.accent-link{
 		position: fixed;
         top: 10px;
         right: 10px;
-        z-index: 1000;
+        z-index: 20;
 	}
 	
+	#logo-name{
+		font-size: 24px;
+	}
+
 	nav{
 		position: fixed;
 		top: 0;
@@ -258,6 +264,9 @@ nav a.accent-link{
 		margin-right: unset;
 		padding: 1em;
 		width: 100%;
+	}
+	nav .home-li:hover{
+		background-color: var(--navbar-hover-color);
 	}
 	
 	nav .home-li a{
@@ -329,6 +338,7 @@ nav a.accent-link{
     padding-top: 50px;
     font-size: 0.95rem;
     width: 100%;
+	margin-top: auto;
 }
 
 .footer-container {
