@@ -61,7 +61,7 @@
                 <li id="accounts-tab">Accounts Control</li>
                 <li id="imports-tab">Import Control</li>
                 <li id="price-tab">Price Control</li>
-                <li id="orders-tab">Order Management</li> 
+                <li id="orders-tab">Order Control</li> 
             </ul>
 
         </div>
@@ -156,7 +156,7 @@
                                 <th>Trạng Thái</th>
                                 <th>Sản phẩm nhập</th>
                                 <th>Tổng Sản Phẩm</th>
-                                <th>Hành Động</th>
+                                <th>Tùy chọn</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -188,7 +188,7 @@
                                 <th>Giá nhập</th>
                                 <th>Lợi nhuận</th>
                                 <th>Giá bán</th>
-                                <th>Sửa</th>
+                                <th>Lưu và cập nhật giá</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -211,6 +211,21 @@
                     <option value="Đã giao">Đã giao</option>
                     <option value="Đã hủy">Đã hủy</option>
                 </select>
+                <div class="filter-group">
+                    <div>
+                    <label >Từ ngày:</label>
+                    <input type="date" id="order-date-from">
+                </div>
+
+                <div>
+                    <label >Đến ngày:</label>
+                    <input type="date" id="order-date-to">
+                </div>
+                <div><button id="clear-order-filter" class="def-btn">Xóa lọc</button>
+                </div>
+                </div>
+        
+                
             </div>
 
             <div class="table-wrapper">
@@ -223,7 +238,7 @@
                             <th>Địa chỉ</th>
                             <th>Trạng thái</th>
                             <th>Tổng tiền</th>
-                            <th>Hành động</th>  
+                            <th>Tùy chọn</th>  
                         </tr>
                     </thead>
                     <tbody>
@@ -361,7 +376,34 @@
             </form>
         </div>
     </div>
+    <div id="viewAccountModal" class="modal-overlay">
+    <div class="modal-content">
+        <button type="button" class="closef" onclick="closeViewAccountModal()">&times;</button>
+        
+        <h2 style="text-align: center;">Thông tin người dùng</h2>
+        
+        <div class="account-details-view">
+            <div class="detail-row">
+                <strong>Họ và tên:</strong> <span id="view-acc-name">...</span>
+            </div>
+            <div class="detail-row">
+                <strong>Email:</strong> <span id="view-acc-email">...</span>
+            </div>
+            <div class="detail-row">
+                <strong>Địa chỉ:</strong> <span id="view-acc-address">...</span>
+            </div>
+            <div class="detail-row">
+                <strong>Trạng thái:</strong> <span id="view-acc-status">...</span>
+            </div>
+        </div>
 
+        <div style="margin-top: 25px; text-align: center;">
+            <button type="button" class="cancel-btn" onclick="closeViewAccountModal()">Đóng</button>
+        </div>
+    </div>
+</div>
+
+</body>
     <div id="viewImportModal" class="modal-overlay">
         <div class="modal-content">
             <h2 id="view-imp-title">Chi tiết Phiếu Nhập #...</h2>

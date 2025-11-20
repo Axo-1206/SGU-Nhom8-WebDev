@@ -426,7 +426,7 @@ function handleSaveAccountSettings(event) {
         return;
     }
 
-    // --- Validation mật khẩu (NÂNG CẤP) ---
+    // --- Validation mật khẩu---
     // Chỉ validate mật khẩu nếu người dùng nhập vào BẤT KỲ ô nào
     if (currentPassword || newPassword || passwordConfirm) {
         
@@ -455,13 +455,12 @@ function handleSaveAccountSettings(event) {
             return;
         }
 
-        // ----- BẠN YÊU CẦU THÊM Ở ĐÂY -----
         // 5. Kiểm tra trùng mật khẩu cũ
         if (newPassword === currentPassword) {
             if (msg) msg.textContent = 'Mật khẩu mới không được trùng với mật khẩu cũ.';
             return;
         }
-        // ----- KẾT THÚC PHẦN THÊM MỚI -----
+
 
         // 6. Kiểm tra có khớp không (trước đó là bước 5)
         if (newPassword !== passwordConfirm) {
@@ -489,6 +488,27 @@ function handleSaveAccountSettings(event) {
     localStorage.setItem('currentUser', JSON.stringify(user));
     currentUser = user; // Cập nhật biến global
 
+    try {
+        let allUsers = JSON.parse(localStorage.getItem('users')) || [];
+        // Tìm user trong danh sách tổng dựa vào username
+        const userIndex = allUsers.findIndex(u => u.username === user.username);
+        
+        if (userIndex !== -1) {
+            // Cập nhật thông tin mới nhưng giữ lại các trường hệ thống
+            allUsers[userIndex] = { 
+                ...allUsers[userIndex], // Giữ thông tin cũ
+                name: user.name,
+                email: user.email,
+                address: user.address,
+                password: user.password // Cập nhật password mới (nếu có)
+            };
+            
+            localStorage.setItem('users', JSON.stringify(allUsers));
+            console.log("Đã đồng bộ thông tin sang danh sách Admin.");
+        }
+    } catch (err) {
+        console.error("Lỗi đồng bộ user:", err);
+    }
     // Cập nhật UI
     showAccountDropdown(user);
     if (msg) msg.textContent = 'Đã lưu thay đổi.';

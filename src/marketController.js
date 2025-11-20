@@ -585,10 +585,22 @@ function generateId(name) {
     return name.toLowerCase().replace(/[^a-z0-9]/g, '-');
 }
 
-// Định dạng giá theo dạng 'k' (ví dụ 20 -> 20k)
 export function formatK(price) {
-  if (price === null || price === undefined) return '';
-  const num = parseInt(String(price).replace(/[^\d]/g, ''), 10) || 0;
+  if (price === null || price === undefined || price === '') return '0k';
+
+  // Xử lý nếu đầu vào là số 
+  if (typeof price === 'number') {
+      // Làm tròn tối đa 2 số lẻ để tránh lỗi số
+      const rounded = Math.round(price * 100) / 100; 
+      return `${rounded}k`;
+  }
+
+  const str = String(price);
+  const cleanStr = str.replace(/[^0-9.]/g, '');
+  
+  let num = parseFloat(cleanStr);
+  if (isNaN(num)) num = 0;
+
   return `${num}k`;
 }
 
@@ -1019,7 +1031,7 @@ window.processCashPayment = function (chosenAddress) {
                 email: currentUser ? currentUser.email : "N/A",
                 address: chosenAddress,
             },
-            status: "Chờ thanh toán khi nhận hàng"  // ⭐ TRẠNG THÁI KHÁC QR
+            status: "Chờ xử lý"
         };
 
         // Lưu cá nhân
@@ -1272,41 +1284,43 @@ function renderMarketItems(page = 1) {
   if (!container) return;
   
   container.innerHTML = "";
-  const availableItems = filteredResults.filter(item => (item.quantity && item.quantity > 0));
+
   const start = (page - 1) * itemsPerPage;
-	const end = start + itemsPerPage;
-	let pageItems = availableItems.slice(start, end); 
+  const end = start + itemsPerPage;
+  let pageItems = filteredResults.slice(start, end); 
 
-	pageItems.forEach(item => {
-		const itemDiv = document.createElement("div");
-		itemDiv.classList.add("market-item");
-    
-		itemDiv.innerHTML = `
-		<div class="item-link">
-			<img src="${item.image}" alt="${item.name}" class="item-image" />
-			<div class="item-info">
-				<h3 class="item-name">${item.name}</h3>
-                <p class="item-price">${formatK(item.price)}</p>
-				<p class="item-quantity">Số lượng: ${item.quantity ?? 0}</p>
-				<p class="item-release">Năm phát hành: ${item.releaseYear ?? "Không rõ"}</p>
-			</div>
-		</div>`;
+  pageItems.forEach(item => {
+    const itemDiv = document.createElement("div");
+    itemDiv.classList.add("market-item");
+    itemDiv.innerHTML = `
+    <div class="item-link">
+      <div class="item-image">
+          <img src="${item.image}" alt="${item.name}" />
+      </div>
+
+      <div class="item-info">
+        <h3 class="item-name">${item.name}</h3>
+        <p class="item-price">${formatK(item.price)}</p>
+        <p class="item-quantity">Số lượng: ${item.quantity ?? 0}</p>
+        <p class="item-release">Năm phát hành: ${item.releaseYear ?? "Không rõ"}</p>
+      </div>
+    </div>`;
+    // --------------------------------
         
-        itemDiv.addEventListener('click', (e) => {
-            document.getElementById('quantity').value = 1;
-            if (e.target.classList.contains('add-to-cart-btn') || 
-                e.target.closest('.add-to-cart-btn')) {
-                return;
-            }
-            showProductDetail(item);
-        });
+    itemDiv.addEventListener('click', (e) => {
+        document.getElementById('quantity').value = 1;
+        if (e.target.classList.contains('add-to-cart-btn') || 
+            e.target.closest('.add-to-cart-btn')) {
+            return;
+        }
+        showProductDetail(item);
+    });
 
-        container.appendChild(itemDiv);
-  	});
+    container.appendChild(itemDiv);
+  });
 
   renderPagination(filteredResults.length, page, itemsPerPage);
 }
-
 // Hiện thị thanh trang
 function renderPagination(totalItems, currentPage, itemsPerPage) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -1452,7 +1466,7 @@ function showProductDetail(item) {
     if (quantityInput) quantityInput.value = 1;
 
     // Hiện popup chi tiết sản phẩm
-    productDetail.style.display = "block";
+    productDetail.classList.add("active"); //TAO SỬA Ở ĐÂY
 
   // Định nghĩa hàm thêm vào giỏ hàng từ popup
   window.addToCartPopup = function() {
@@ -1462,7 +1476,7 @@ function showProductDetail(item) {
         addToCart(item, quantity); 
 
         // Đóng popup chi tiết sản phẩm
-        productDetail.style.display = "none";
+        productDetail.classList.remove("active"); //TAO SỬA Ở ĐÂY
   };
 
     // Định nghĩa các hàm xử lý số lượng
@@ -1497,7 +1511,7 @@ function showProductDetail(item) {
         // Điều kiện: click bên ngoài popup VÀ không phải click vào 1 ".market-item" khác
         if (!productDetail.contains(event.target) && 
             !event.target.closest('.market-item')) {
-            productDetail.style.display = "none";
+productDetail.classList.remove("active"); //TAO SỬA Ở ĐÂY
             document.removeEventListener('click', closePopup, true); // Bắt sự kiện ở phase capture
         }
     };

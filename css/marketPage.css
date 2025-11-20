@@ -268,9 +268,13 @@
 }
 
 .item-price {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 1rem;
     color: #8b14f9;
     font-weight: 700;
+    width: 100%;
 }
 
 .item-quantity {

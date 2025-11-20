@@ -602,3 +602,37 @@
 .order-filter{
    padding: 8px; border-radius: 5px; background: #343a40; color: white; border: 1px solid #495057;
 }
+.filter-group{
+  display: flex;
+  flex-direction: row;
+}
+.filter-group div{
+  margin: 10px;
+}
+.def-btn {
+  background-color: #4CAF50; /* Xanh lá */
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  padding: 8px 12px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+.def-btn:hover{
+  background-color: #5cb85c;
+}
+.detail-row{
+ margin: 8px;
+}
+.view-order-btn,
+.save-order-btn,
+.save-order-btn,
+.price-save-btn{
+   background:#589779; 
+   color:white; 
+   border:none; 
+   padding:5px 8px; 
+   border-radius:4px; 
+   cursor:pointer;
+}

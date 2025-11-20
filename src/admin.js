@@ -587,20 +587,7 @@ function openAddAccountModal() {
     accPasswordField.required = true;
     accModal.classList.add("visible");
 }
-// Mở form sửa tài khoản
-function openEditAccountModal(index) {
-    const account =  accountsList[index]; 
-    if (!account) return;
-    currentAccountEditIndex = index;
-    AccountForm.reset();
-    document.getElementById("account-username").value = account.username;
-    document.getElementById("account-email").value = account.email;
-    accPasswordField.placeholder = "Nhập mật khẩu mới (để trống nếu giữ nguyên)";
-    accPasswordField.required = false;
-    accFormTitle.textContent = "Chỉnh sửa tài khoản";
-    accSubmitBtn.textContent = "Lưu thay đổi";
-    accModal.classList.add("visible");
-}
+
 // Đóng form
 function closeAccountModal() {
     accModal.classList.remove("visible");
@@ -695,10 +682,10 @@ function renderAccountsTable(page = 1) {
                     <button class="status-btn ${user.active ? 'on' : 'off'}" data-index="${originalIndex}">
                         ${user.active ? '<svg width="18px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>' : '<svg width="18px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16.584 6C15.8124 4.2341 14.0503 3 12 3C9.23858 3 7 5.23858 7 8V10.0288M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C16.8802 10 17.7202 10 18.362 10.327C18.9265 10.6146 19.3854 11.0735 19.673 11.638C20 12.2798 20 13.1198 20 14.8V16.2C20 17.8802 20 18.7202 19.673 19.362C19.3854 19.9265 18.9265 20.3854 18.362 20.673C17.7202 21 16.8802 21 15.2 21H8.8C7.11984 21 6.27976 21 5.63803 20.673C5.07354 20.3854 4.6146 19.9265 4.32698 19.362C4 18.7202 4 17.8802 4 16.2V14.8C4 13.1198 4 12.2798 4.32698 11.638C4.6146 11.0735 5.07354 10.6146 5.63803 10.327C5.99429 10.1455 6.41168 10.0647 7 10.0288Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>'}
                     </button>
-                    <button class="edit-btn" title="Edit" data-index="${originalIndex}"> 
-                        <svg width="18px" height="18px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13 0L16 3L9 10H6V7L13 0Z" fill="#000000"></path>
-                            <path d="M1 1V15H15V9H13V13H3V3H7V1H1Z" fill="#000000"></path>
+                    <button class="view-acc-btn" title="Xem chi tiết" data-index="${originalIndex}"> 
+                        <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
                     <button class="delete-btn" title="Delete" data-index="${originalIndex}">
@@ -731,9 +718,9 @@ document.querySelector(".accounts-table tbody").addEventListener("click", (e) =>
     };
     let index; 
 
-    index = getIndex(e.target, ".edit-btn");
+    index = getIndex(e.target, ".view-acc-btn");
     if (index !== null) {
-        openEditAccountModal(index); 
+        openViewAccountModal(index); 
         return;
     }
 
@@ -789,7 +776,42 @@ document.querySelector(".accounts-table tbody").addEventListener("click", (e) =>
         return;
     }
 });
+// --- LOGIC XEM CHI TIẾT TÀI KHOẢN ---
 
+function openViewAccountModal(index) {
+    const user = accountsList[index];
+    if (!user) return;
+
+    const modal = document.getElementById("viewAccountModal");
+    
+    // Điền dữ liệu vào modal
+    document.getElementById("view-acc-name").textContent = user.name || "Chưa cập nhật";
+    document.getElementById("view-acc-email").textContent = user.email || "Chưa cập nhật";
+    document.getElementById("view-acc-address").textContent = user.address || "Chưa cập nhật";
+    
+    // Xử lý hiển thị trạng thái
+    const statusSpan = document.getElementById("view-acc-status");
+    statusSpan.textContent = user.active ? "Đang hoạt động" : "Đã khóa";
+    statusSpan.style.color = user.active ? "green" : "red";
+    statusSpan.style.fontWeight = "bold";
+
+    // Hiện modal
+    if(modal) modal.classList.add("visible");
+}
+
+// Hàm đóng modal (Cần gán vào window để gọi từ HTML onclick)
+window.closeViewAccountModal = function() {
+    const modal = document.getElementById("viewAccountModal");
+    if(modal) modal.classList.remove("visible");
+}
+
+// Đóng khi click ra ngoài
+const viewAccModal = document.getElementById("viewAccountModal");
+if (viewAccModal) {
+    viewAccModal.addEventListener("click", (e) => {
+        if (e.target === viewAccModal) closeViewAccountModal();
+    });
+}
 // PHIẾU NHẬP HÀNG 
 const importModal = document.getElementById("importForm");
 const importForm = document.getElementById("import-frm");
@@ -1244,7 +1266,7 @@ function renderPriceTable(page = 1) {
                 <td>${item.name}</td>
                 <td class="cost-price-cell" data-cost="${cost_price}">${formatK(cost_price)}</td>
                 <td><input type="text" class="profit-input" value="${profit_margin.toFixed(2)}">%</td>
-                <td class="selling-price-cell">${formatK(selling_price)}K</td>
+                <td class="selling-price-cell">${formatK(selling_price)}</td>
                 <td><button class="price-save-btn">Lưu</button></td>
             `;
             priceTableBody.appendChild(tr);
@@ -1393,30 +1415,30 @@ function loadAllOrdersFromStorage() {
     return dataString ? JSON.parse(dataString) : [];
 }
 
-// *** BẮT ĐẦU THAY ĐỔI ***
-// Hàm lưu tất cả đơn hàng (ngược lại với hàm load)
+// Hàm lưu tất cả đơn hàng
 function saveAllOrdersToStorage(orders) {
     localStorage.setItem("all_orders", JSON.stringify(orders));
 }
 
-// Hàm helper để định dạng màu mè cho status
+// Hàm helper để định dạng màu
 function formatOrderStatus(status) {
     let className = 'status-pending';
     if (status === 'Đang giao') className = 'status-shipping';
     if (status === 'Đã giao') className = 'status-delivered';
     if (status === 'Đã hủy') className = 'status-cancelled';
     
-    // Chúng ta sẽ dùng thẻ span với class để CSS có thể bắt được
+    //dùng thẻ span với class để CSS có thể bắt được
     return `<span class="status-badge ${className}">${status}</span>`;
 }
 
 // Render bảng đơn hàng
+
 function renderOrdersTable(page = 1) {
     orderCurrentPage = page;
     const allOrders = loadAllOrdersFromStorage();
     const tbody = document.querySelector(".orders-table tbody");
-    
-    // --- Code thêm cột "Khóa đơn" (giữ nguyên từ bước trước) ---
+
+    // Header bảng (đảm bảo có cột Khóa đơn)
     const theadRow = document.querySelector(".orders-table thead tr");
     if (theadRow && !theadRow.innerHTML.includes('Khóa đơn')) {
         theadRow.innerHTML = `
@@ -1426,56 +1448,77 @@ function renderOrdersTable(page = 1) {
             <th>Địa chỉ</th>
             <th>Trạng thái</th>
             <th>Tổng tiền</th>
-            <th>Khóa đơn</th>
+            <th>Cập nhật trạng thái</th>
             <th>Hành động</th> 
         `;
     }
-    // ----------------------------------------------------------
 
     if (!tbody) return;
     tbody.innerHTML = "";
 
-    // LẤY GIÁ TRỊ TỪ DROPDOWN
+    // === LẤY GIÁ TRỊ BỘ LỌC ===
     const filterStatus = document.getElementById("order-filter-status") ? document.getElementById("order-filter-status").value : "";
+    const dateFromInput = document.getElementById("order-date-from");
+    const dateToInput = document.getElementById("order-date-to");
+    
+    // Chuyển đổi ngày chọn về dạng timestamp (đầu ngày và cuối ngày)
+    let fromDate = dateFromInput && dateFromInput.value ? new Date(dateFromInput.value).setHours(0,0,0,0) : null;
+    let toDate = dateToInput && dateToInput.value ? new Date(dateToInput.value).setHours(23,59,59,999) : null;
 
-    // LOGIC LỌC MỚI: So sánh chính xác trạng thái
+    // === LOGIC LỌC ===
     const filteredOrders = allOrders.filter(order => {
-        // Nếu chọn "Tất cả" (value rỗng) thì lấy hết
-        if (filterStatus === "") return true;
+        let isValid = true;
+
+        // 1. Lọc theo trạng thái
+        if (filterStatus !== "" && (order.status || 'Chờ xử lý') !== filterStatus) {
+            isValid = false;
+        }
+
+        // 2. Lọc theo ngày (Nếu đơn hàng hợp lệ trạng thái thì mới kiểm tra ngày)
+        if (isValid) {
+            const orderDate = new Date(order.date).getTime(); // Chuyển ngày đặt hàng về timestamp
+            
+            if (fromDate && orderDate < fromDate) isValid = false;
+            if (toDate && orderDate > toDate) isValid = false;
+        }
         
-        // So sánh trạng thái đơn hàng với giá trị đang chọn
-        // (Dùng toán tử || để phòng hờ order.status bị undefined)
-        return (order.status || 'Chờ xử lý') === filterStatus;
+        return isValid;
     });
 
-    // Phân trang
+    // === PHÂN TRANG & RENDER ===
     const totalItems = filteredOrders.length;
     const start = (page - 1) * ITEMS_PER_PAGE;
     const end = start + ITEMS_PER_PAGE;
     const ordersToRender = filteredOrders.slice(start, end);
 
-    // Render
     if (ordersToRender.length === 0 && page === 1) {
-        tbody.innerHTML = `<tr><td colspan="8">Không tìm thấy đơn hàng nào có trạng thái "${filterStatus || 'Tất cả'}".</td></tr>`; 
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">Không tìm thấy đơn hàng nào phù hợp với bộ lọc.</td></tr>`; 
     } else {
         ordersToRender.forEach(order => {
             const tr = document.createElement("tr");
             const user = order.user || { username: 'Guest', email: 'N/A', address: 'N/A' };
             const orderStatus = order.status || 'Chờ xử lý';
-            const isCancelled = orderStatus === 'Đã hủy';
-            const isLocked = order.isLocked === true || isCancelled;
+            const isLocked = order.isLocked === true; 
             const saveButton = isLocked 
                 ? '<span style="color:red; font-weight:bold;"><i class="fas fa-lock"></i> Đã khóa</span>' 
                 : `<button class="save-order-btn" data-id="${order.id}">Lưu & Khóa</button>`;
+            
+            // Format ngày giờ đẹp hơn
+            const dateObj = new Date(order.date);
+            const dateStr = dateObj.toLocaleDateString('vi-VN') + ' ' + dateObj.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
+
             tr.innerHTML = `
-                <td>${order.id}</td>
-                <td>${new Date(order.date).toLocaleString()}</td>
-                <td>${user.username}</td>
+                <td><strong>${order.id}</strong></td>
+                <td>${dateStr}</td>
+                <td>
+                    <div>${user.username}</div>
+                    <div>${user.email}</div>
+                </td>
                 <td>${user.address}</td>
                 <td>${formatOrderStatus(orderStatus)}</td> 
                 <td>${order.total}</td>
-                <td>
-                    <select class="order-status-select" data-id="${order.id}" ${isLocked ? 'disabled' : ''} style="${isLocked ? 'background:#eee; cursor:not-allowed;' : ''}">
+                <td style="text-align:center;">
+                    <select class="order-status-select" data-id="${order.id}" ${isLocked ? 'disabled' : ''} style="padding: 4px; ${isLocked ? 'background:#eee; cursor:not-allowed;' : ''}">
                         <option value="Chờ xử lý" ${orderStatus === 'Chờ xử lý' ? 'selected' : ''}>Chờ xử lý</option>
                         <option value="Đang giao" ${orderStatus === 'Đang giao' ? 'selected' : ''}>Đang giao</option>
                         <option value="Đã giao" ${orderStatus === 'Đã giao' ? 'selected' : ''}>Đã giao</option>
@@ -1483,11 +1526,11 @@ function renderOrdersTable(page = 1) {
                     </select>
                 </td>
                 <td>
-                    ${saveButton}
-                    <button class="view-order-btn" data-id="${order.id}" style="background:#007bff; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Xem chi tiết</button>
+                    <div style="display:flex; gap:5px; justify-content:center;">
+                        ${saveButton}
+                        <button class="view-order-btn" data-id="${order.id}">Xem</button>
+                    </div>
                 </td>
-                </td>
-            
             `;
             tbody.appendChild(tr);
         });
@@ -1498,6 +1541,26 @@ function renderOrdersTable(page = 1) {
     });
 }
 
+const dateFromInput = document.getElementById("order-date-from");
+const dateToInput = document.getElementById("order-date-to");
+const clearFilterBtn = document.getElementById("clear-order-filter");
+
+if (dateFromInput) {
+    dateFromInput.addEventListener("change", () => renderOrdersTable(1));
+}
+if (dateToInput) {
+    dateToInput.addEventListener("change", () => renderOrdersTable(1));
+}
+
+// Nút xóa bộ lọc
+if (clearFilterBtn) {
+    clearFilterBtn.addEventListener("click", () => {
+        document.getElementById("order-filter-status").value = "";
+        document.getElementById("order-date-from").value = "";
+        document.getElementById("order-date-to").value = "";
+        renderOrdersTable(1);
+    });
+}
 
 // Mở Modal Xem Chi Tiết Đơn Hàng
 function openViewOrderModal(orderId) {
@@ -1580,10 +1643,6 @@ document.getElementById("price").style.display = "none";
 
 
 // Lắng nghe sự kiện thay đổi trạng thái đơn hàng
-// --- TÌM VÀ SỬA TRONG src/admin.js ---
-
-// [admin.js] Thay thế toàn bộ đoạn listener 'change' cũ bằng đoạn này:
-
 document.querySelector(".orders-table tbody").addEventListener('change', (e) => {
     if (e.target.classList.contains('order-status-select')) {
         const orderId = e.target.dataset.id;
@@ -1596,26 +1655,20 @@ document.querySelector(".orders-table tbody").addEventListener('change', (e) => 
             const currentOrder = allOrders[orderIndex];
             const oldStatus = currentOrder.status; 
 
-            // === LOGIC HỦY ĐƠN: HOÀN KHO + KHÓA ===
-            if (newStatus === 'Đã hủy' && oldStatus !== 'Đã hủy') {
-                // Hỏi xác nhận
-                if(confirm("Xác nhận HỦY đơn hàng này?\n\n- Số lượng sẽ được hoàn về kho.\n- Đơn hàng sẽ bị KHÓA vĩnh viễn.")) {
-                    
-                    // 1. CẬP NHẬT BIẾN TOÀN CỤC marketItems
-                    // (Quan trọng: Phải cập nhật biến này để bảng Market hiển thị đúng ngay lập tức)
-                    
-                    // Đảm bảo lấy dữ liệu mới nhất từ storage trước khi cộng
-                    marketItems = loadProductsFromStorage(); 
-                    
-                    let restoredCount = 0;
+            // Load lại marketItems mới nhất để tính toán tồn kho
+            marketItems = loadProductsFromStorage(); 
 
-                    if (currentOrder.items && currentOrder.items.length > 0) {
+            //HỦY ĐƠN
+            if (newStatus === 'Đã hủy' && oldStatus !== 'Đã hủy') {
+                if(confirm("Xác nhận HỦY đơn hàng này?\n\n- Số lượng sẽ được HOÀN VỀ kho.\n- Đơn hàng vẫn có thể chỉnh sửa tiếp.")) {
+                    let restoredCount = 0;
+                    if (currentOrder.items) {
                         currentOrder.items.forEach(orderItem => {
-                            // Tìm và cộng số lượng
                             Object.values(marketItems).forEach(cat => {
                                 if (cat.items) {
                                     const product = cat.items.find(p => p.name === orderItem.name);
                                     if (product) {
+                                        // CỘNG lại vào kho
                                         product.quantity = (parseInt(product.quantity) || 0) + (parseInt(orderItem.quantity) || 1);
                                         restoredCount++;
                                     }
@@ -1624,29 +1677,54 @@ document.querySelector(".orders-table tbody").addEventListener('change', (e) => 
                         });
                     }
                     
-                    // Lưu lại biến marketItems đã sửa vào localStorage
-                    saveProductsToStorage();
-                    
-                    // 2. Cập nhật trạng thái đơn hàng và KHÓA
+                    saveProductsToStorage(); // Lưu kho
                     currentOrder.status = newStatus;
-                    currentOrder.isLocked = true; 
-                    
-                    alert(`Đã hủy và hoàn kho ${restoredCount} loại sản phẩm.`);
 
+                    
+                    alert(`Đã hủy đơn và hoàn kho ${restoredCount} loại sản phẩm.`);
                 } else {
-                    // Nếu người dùng bấm Cancel (không muốn hủy), reset dropdown về trạng thái cũ
-                    e.target.value = oldStatus;
+                    e.target.value = oldStatus; // Cancel thì trả về cũ
                     return; 
                 }
-            } else {
-                // Nếu không phải hủy, chỉ cập nhật trạng thái bình thường
+            } 
+            //KHÔI PHỤC TỪ "ĐÃ HỦY" 
+            else if (oldStatus === 'Đã hủy' && newStatus !== 'Đã hủy') {
+                 if(confirm("Bạn đang khôi phục đơn hàng đã hủy?\n\n- Số lượng sẽ bị TRỪ khỏi kho.")) {
+                    let deductedCount = 0;
+                    if (currentOrder.items) {
+                        currentOrder.items.forEach(orderItem => {
+                            Object.values(marketItems).forEach(cat => {
+                                if (cat.items) {
+                                    const product = cat.items.find(p => p.name === orderItem.name);
+                                    if (product) {
+                                        // TRỪ khỏi kho
+                                        product.quantity = (parseInt(product.quantity) || 0) - (parseInt(orderItem.quantity) || 1);
+                                        if (product.quantity < 0) product.quantity = 0; // Không cho âm
+                                        deductedCount++;
+                                    }
+                                }
+                            });
+                        });
+                    }
+
+                    saveProductsToStorage(); // Lưu kho
+                    currentOrder.status = newStatus;
+                    alert(`Đã khôi phục đơn hàng và trừ kho ${deductedCount} loại sản phẩm.`);
+                 } else {
+                     e.target.value = oldStatus;
+                     return;
+                 }
+            }
+            //ĐỔI TRẠNG THÁI BÌNH THƯỜNG ===
+            else {
                 currentOrder.status = newStatus;
             }
 
-            // 3. Lưu dữ liệu đơn hàng
+            // --- LƯU TRỮ CHUNG ---
+            // Lưu all_orders
             saveAllOrdersToStorage(allOrders);
             
-            // 4. Đồng bộ sang dữ liệu cá nhân của user
+            //Đồng bộ sang đơn hàng cá nhân (localStorage 'orders')
             const userOrdersString = localStorage.getItem('orders');
             if (userOrdersString) {
                 try {
@@ -1654,7 +1732,7 @@ document.querySelector(".orders-table tbody").addEventListener('change', (e) => 
                     const userOrderIndex = userOrders.findIndex(o => o.id === orderId);
                     if (userOrderIndex !== -1) {
                         userOrders[userOrderIndex].status = currentOrder.status;
-                        userOrders[userOrderIndex].isLocked = currentOrder.isLocked;
+                        // userOrders[userOrderIndex].isLocked = currentOrder.isLocked; // Không cần cập nhật lock ở đây nữa vì ko thay đổi
                         localStorage.setItem('orders', JSON.stringify(userOrders));
                     }
                 } catch (err) {
@@ -1662,12 +1740,9 @@ document.querySelector(".orders-table tbody").addEventListener('change', (e) => 
                 }
             }
             
-            // 5. Render lại bảng đơn hàng
+            //Render lại giao diện
             renderOrdersTable(orderCurrentPage);
-            
-            // 6. Render lại bảng sản phẩm NGAY LẬP TỨC (về trang 1)
-            // Vì biến marketItems đã được cập nhật ở Bước 1, hàm này sẽ hiển thị đúng số lượng mới
-            renderProductTable(1); 
+            renderProductTable(1); // Cập nhật bảng sản phẩm
         }
     }
 });
@@ -1681,7 +1756,7 @@ document.querySelector(".orders-table tbody").addEventListener('click', (e) => {
         return;
     }
 
-    // 2. XỬ LÝ NÚT LƯU & KHÓA (Code cũ giữ nguyên)
+    // 2. XỬ LÝ NÚT LƯU & KHÓA
     if (e.target.classList.contains('save-order-btn')) {
         const orderId = e.target.dataset.id;
         
