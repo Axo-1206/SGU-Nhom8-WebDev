@@ -622,3 +622,17 @@
 .def-btn:hover{
   background-color: #5cb85c;
 }
+.detail-row{
+ margin: 8px;
+}
+.view-order-btn,
+.save-order-btn,
+.save-order-btn,
+.price-save-btn{
+   background:#589779; 
+   color:white; 
+   border:none; 
+   padding:5px 8px; 
+   border-radius:4px; 
+   cursor:pointer;
+}

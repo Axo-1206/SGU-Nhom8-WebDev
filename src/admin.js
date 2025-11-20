@@ -587,20 +587,7 @@ function openAddAccountModal() {
     accPasswordField.required = true;
     accModal.classList.add("visible");
 }
-// Mở form sửa tài khoản
-function openEditAccountModal(index) {
-    const account =  accountsList[index]; 
-    if (!account) return;
-    currentAccountEditIndex = index;
-    AccountForm.reset();
-    document.getElementById("account-username").value = account.username;
-    document.getElementById("account-email").value = account.email;
-    accPasswordField.placeholder = "Nhập mật khẩu mới (để trống nếu giữ nguyên)";
-    accPasswordField.required = false;
-    accFormTitle.textContent = "Chỉnh sửa tài khoản";
-    accSubmitBtn.textContent = "Lưu thay đổi";
-    accModal.classList.add("visible");
-}
+
 // Đóng form
 function closeAccountModal() {
     accModal.classList.remove("visible");
@@ -695,10 +682,10 @@ function renderAccountsTable(page = 1) {
                     <button class="status-btn ${user.active ? 'on' : 'off'}" data-index="${originalIndex}">
                         ${user.active ? '<svg width="18px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>' : '<svg width="18px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16.584 6C15.8124 4.2341 14.0503 3 12 3C9.23858 3 7 5.23858 7 8V10.0288M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C16.8802 10 17.7202 10 18.362 10.327C18.9265 10.6146 19.3854 11.0735 19.673 11.638C20 12.2798 20 13.1198 20 14.8V16.2C20 17.8802 20 18.7202 19.673 19.362C19.3854 19.9265 18.9265 20.3854 18.362 20.673C17.7202 21 16.8802 21 15.2 21H8.8C7.11984 21 6.27976 21 5.63803 20.673C5.07354 20.3854 4.6146 19.9265 4.32698 19.362C4 18.7202 4 17.8802 4 16.2V14.8C4 13.1198 4 12.2798 4.32698 11.638C4.6146 11.0735 5.07354 10.6146 5.63803 10.327C5.99429 10.1455 6.41168 10.0647 7 10.0288Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>'}
                     </button>
-                    <button class="edit-btn" title="Edit" data-index="${originalIndex}"> 
-                        <svg width="18px" height="18px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13 0L16 3L9 10H6V7L13 0Z" fill="#000000"></path>
-                            <path d="M1 1V15H15V9H13V13H3V3H7V1H1Z" fill="#000000"></path>
+                    <button class="view-acc-btn" title="Xem chi tiết" data-index="${originalIndex}"> 
+                        <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
                     <button class="delete-btn" title="Delete" data-index="${originalIndex}">
@@ -731,9 +718,9 @@ document.querySelector(".accounts-table tbody").addEventListener("click", (e) =>
     };
     let index; 
 
-    index = getIndex(e.target, ".edit-btn");
+    index = getIndex(e.target, ".view-acc-btn");
     if (index !== null) {
-        openEditAccountModal(index); 
+        openViewAccountModal(index); 
         return;
     }
 
@@ -789,7 +776,42 @@ document.querySelector(".accounts-table tbody").addEventListener("click", (e) =>
         return;
     }
 });
+// --- LOGIC XEM CHI TIẾT TÀI KHOẢN ---
 
+function openViewAccountModal(index) {
+    const user = accountsList[index];
+    if (!user) return;
+
+    const modal = document.getElementById("viewAccountModal");
+    
+    // Điền dữ liệu vào modal
+    document.getElementById("view-acc-name").textContent = user.name || "Chưa cập nhật";
+    document.getElementById("view-acc-email").textContent = user.email || "Chưa cập nhật";
+    document.getElementById("view-acc-address").textContent = user.address || "Chưa cập nhật";
+    
+    // Xử lý hiển thị trạng thái
+    const statusSpan = document.getElementById("view-acc-status");
+    statusSpan.textContent = user.active ? "Đang hoạt động" : "Đã khóa";
+    statusSpan.style.color = user.active ? "green" : "red";
+    statusSpan.style.fontWeight = "bold";
+
+    // Hiện modal
+    if(modal) modal.classList.add("visible");
+}
+
+// Hàm đóng modal (Cần gán vào window để gọi từ HTML onclick)
+window.closeViewAccountModal = function() {
+    const modal = document.getElementById("viewAccountModal");
+    if(modal) modal.classList.remove("visible");
+}
+
+// Đóng khi click ra ngoài
+const viewAccModal = document.getElementById("viewAccountModal");
+if (viewAccModal) {
+    viewAccModal.addEventListener("click", (e) => {
+        if (e.target === viewAccModal) closeViewAccountModal();
+    });
+}
 // PHIẾU NHẬP HÀNG 
 const importModal = document.getElementById("importForm");
 const importForm = document.getElementById("import-frm");
@@ -1506,7 +1528,7 @@ function renderOrdersTable(page = 1) {
                 <td>
                     <div style="display:flex; gap:5px; justify-content:center;">
                         ${saveButton}
-                        <button class="view-order-btn" data-id="${order.id}" style="background:#007bff; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;">Xem</button>
+                        <button class="view-order-btn" data-id="${order.id}">Xem</button>
                     </div>
                 </td>
             `;
