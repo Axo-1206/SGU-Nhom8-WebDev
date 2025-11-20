@@ -1466,7 +1466,7 @@ function showProductDetail(item) {
     if (quantityInput) quantityInput.value = 1;
 
     // Hiện popup chi tiết sản phẩm
-    productDetail.classList.add("active"); //TAO SỬA Ở ĐÂY
+    productDetail.classList.add("active");
 
   // Định nghĩa hàm thêm vào giỏ hàng từ popup
   window.addToCartPopup = function() {
@@ -1476,7 +1476,7 @@ function showProductDetail(item) {
         addToCart(item, quantity); 
 
         // Đóng popup chi tiết sản phẩm
-        productDetail.classList.remove("active"); //TAO SỬA Ở ĐÂY
+        productDetail.classList.remove("active");
   };
 
     // Định nghĩa các hàm xử lý số lượng
@@ -1511,7 +1511,7 @@ function showProductDetail(item) {
         // Điều kiện: click bên ngoài popup VÀ không phải click vào 1 ".market-item" khác
         if (!productDetail.contains(event.target) && 
             !event.target.closest('.market-item')) {
-productDetail.classList.remove("active"); //TAO SỬA Ở ĐÂY
+productDetail.classList.remove("active");
             document.removeEventListener('click', closePopup, true); // Bắt sự kiện ở phase capture
         }
     };
