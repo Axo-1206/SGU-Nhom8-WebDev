@@ -953,25 +953,32 @@ window.completePayment = function() {
 
             // 2. THÊM MỚI: Lưu vào "kho" TRUNG TÂM cho Admin
             const allOrders = JSON.parse(localStorage.getItem('all_orders') || '[]');
-            allOrders.unshift(order); // Đơn mới nhất lên đầu
+            allOrders.unshift(order); 
             localStorage.setItem('all_orders', JSON.stringify(allOrders));
         }
+        if (typeof updateStockAfterPurchase === 'function') {
+                updateStockAfterPurchase(cart);
+            }
     } catch (e) {
         console.error('Error saving order:', e);
     }
-
+    
     // Xóa giỏ hàng (như cũ)
     localStorage.setItem('cart', '[]');
     localStorage.removeItem('tempOrderAddress');
     // Cập nhật badge (như cũ)
-    if (window.updateCartBadge) {
-        window.updateCartBadge();
+    if (typeof window.updateCartDisplay === 'function') {
+        window.updateCartDisplay(); 
     }
-    
+    const badge = document.getElementById('floating-cart-badge');
+    if (badge) {
+        badge.textContent = '0';
+        badge.style.display = 'none'; // Ẩn luôn số 0 đi cho đẹp
+    }
     // Hiển thị thông báo (như cũ)
     statusEl.textContent = 'Thanh toán thành công! Cảm ơn bạn đã mua hàng.';
     statusEl.style.color = '#27ae60';
-    
+    updateStockAfterPurchase(cart);
     const confirmBtn = document.querySelector('.confirm-payment-btn');
     if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = 'Đã xác nhận'; }
     
@@ -1024,14 +1031,20 @@ window.processCashPayment = function (chosenAddress) {
         const allOrders = JSON.parse(localStorage.getItem('all_orders') || '[]');
         allOrders.unshift(order);
         localStorage.setItem('all_orders', JSON.stringify(allOrders));
-
+        updateStockAfterPurchase(cart);
         // Xóa giỏ
         localStorage.setItem('cart', '[]');
 
-        if (window.updateCartBadge) window.updateCartBadge();
-
+       if (typeof window.updateCartDisplay === 'function') {
+        window.updateCartDisplay(); 
+    }
+    const badge = document.getElementById('floating-cart-badge');
+    if (badge) {
+        badge.textContent = '0';
+        badge.style.display = 'none'; // Ẩn luôn số 0 đi cho đẹp
+    }
         alert("Đặt hàng thành công! Bạn sẽ thanh toán khi nhận hàng.");
-
+    
         // Nếu đang mở lịch sử thì reload
         const ordersModal = document.getElementById('ordersModal');
         if (ordersModal && ordersModal.style.display === 'flex') {
@@ -1042,134 +1055,136 @@ window.processCashPayment = function (chosenAddress) {
         console.error("Lỗi thanh toán tiền mặt:", err);
     }
 };
-// ***** KẾT THÚC SỬA: HÀM COMPLETEPAYMENT *****
 
-// ===== Purchase history UI =====
-function formatDate(iso) {
-  try { return new Date(iso).toLocaleString(); } catch(e){ return iso; }
-}
-
-window.showPurchaseHistory = function() {
-  const ordersModal = document.getElementById('ordersModal');
-  if (!ordersModal) return;
-  renderPurchaseHistory();
-  ordersModal.style.display = 'flex';
-};
-
-window.closePurchaseHistory = function() {
-  const ordersModal = document.getElementById('ordersModal');
-  if (ordersModal) ordersModal.style.display = 'none';
-};
-
-window.showOrderDetails = function(orderId) {
-  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-  const order = orders.find(o => o.id === orderId);
-  if (!order) return;
-  
-  const titleEl = document.getElementById('orderDetailsTitle');
-  if (titleEl) titleEl.textContent = `Chi tiết đơn hàng ${orderId}`;
-  
-  const container = document.getElementById('orderDetailsContainer');
-  if (!container) return;
-  
-  const booksHtml = (order.items || []).map(item => `
-    <div class="book-card-large">
-      <div class="book-cover">
-<img src="${item.image || '../assets/images/nhom.png'}" alt="${item.name}" onerror="this.src='../assets/images/nhom.png'" />
-      </div>
-      <div class="book-info">
-        <div class="book-name">${item.name}</div>
-        <div class="book-qty">Số lượng: <strong>${item.quantity || 1}</strong></div>
-        <div class="book-price">Giá: <strong>${item.price}</strong></div>
-      </div>
-    </div>
-  `).join('');
-  
-  container.innerHTML = booksHtml;
-  
-  const modal = document.getElementById('orderDetailsModal');
-  if (modal) modal.style.display = 'flex';
-};
-
-window.closeOrderDetails = function() {
-  const modal = document.getElementById('orderDetailsModal');
-  if (modal) modal.style.display = 'none';
-};
 function renderPurchaseHistory() {
     const container = document.getElementById('ordersList');
     if (!container) return;
     
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser) {
+        container.innerHTML = '<div class="empty-orders">Vui lòng đăng nhập.</div>';
+        return;
+    }
 
-    if (!orders || orders.length === 0) {
+    // Lấy dữ liệu từ kho chung all_orders
+    const allOrders = JSON.parse(localStorage.getItem('all_orders') || '[]');
+
+    // Lọc đơn của user hiện tại
+    const myOrders = allOrders.filter(o => 
+        o.user && o.user.username === currentUser.username
+    );
+
+    if (myOrders.length === 0) {
         container.innerHTML = '<div class="empty-orders">Bạn chưa có đơn hàng nào.</div>';
         return;
     }
 
-    // Bắt đầu tạo bảng
-    let tableHtml = `
-    <div class="table-responsive">
-        <table class="history-table">
-            <thead>
-                <tr>
-                    <th>Mã ĐH</th>
-                    <th>Ngày đặt</th>
-                    <th style="width: 30%;">Địa chỉ</th>
-                    <th>SL</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                </tr>
-            </thead>
-            <tbody>
+    // Tạo bảng HTML
+    let html = `
+        <div class="table-responsive">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Mã ĐH</th>
+                        <th>Ngày đặt</th>
+                        <th class="address-cell">Địa chỉ</th>
+                        <th>SL</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
 
-    // Tạo các dòng (rows)
-    const rowsHtml = orders.map(o => { 
-        if (!o || !o.id) return ''; 
-
+    html += myOrders.map(o => {
         const totalQty = (o.items || []).reduce((sum, it) => sum + (it.quantity || 1), 0);
-        const rawDate = o.date ? o.date.split('T')[0] : 'N/A';
-        const address = (o.user && o.user.address) ? o.user.address : '---';
-
-        let statusText;
-        let statusClass;
-        switch (o.status) {
-            case 'Đang giao':
-                statusText = 'Đang giao';
-                statusClass = 'delivering';
-                break;
-            case 'Đã giao':
-                statusText = 'Đã giao';
-                statusClass = 'completed';
-                break;
-            case 'Đã hủy':
-                statusText = 'Đã hủy';
-                statusClass = 'cancelled';
-                break;
-            default:
-                statusText = 'Chờ xử lý';
-                statusClass = 'waiting';
-        }
+        const dateStr = o.date ? new Date(o.date).toLocaleDateString('vi-VN') : 'N/A';
         
-        // Render dòng tr
+
+        let statusClass = 'waiting';
+        if (o.status === 'Đang giao') statusClass = 'delivering';
+        if (o.status === 'Đã giao') statusClass = 'completed';
+        if (o.status === 'Đã hủy') statusClass = 'cancelled';
+
+        
         return `
-          <tr onclick="showOrderDetails('${o.id}')" title="Xem chi tiết">
-            <td class="fw-bold">${o.id}</td>
-            <td>${rawDate}</td>
-            <td class="address-cell" title="${address}">${address}</td>
-            <td class="text-center">${totalQty}</td>
-            <td class="fw-bold price-text">${o.total}</td>
-            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-          </tr>
+            <tr onclick="showOrderDetails('${o.id}')" style="cursor: pointer;">
+                <td style="font-weight:bold;">${o.id}</td>
+                <td>${dateStr}</td>
+                <td class="address-cell">${o.user.address || '---'}</td>
+                <td>${totalQty}</td>
+                <td class="price-text">${o.total}</td>
+                <td><span class="status-badge ${statusClass}">${o.status || 'Chờ xử lý'}</span></td>
+            </tr>
         `;
     }).join('');
 
-    // Đóng bảng
-    tableHtml += rowsHtml + `</tbody></table></div>`;
-    
-    container.innerHTML = tableHtml;
+    html += `</tbody></table></div>`;
+    container.innerHTML = html;
 }
 
+
+// --- Thay thế hàm showOrderDetails cũ bằng hàm này ---
+
+window.showOrderDetails = function(orderId) {
+    // 1. Tìm đơn hàng
+    const allOrders = JSON.parse(localStorage.getItem('all_orders') || '[]');
+    const order = allOrders.find(o => o.id === orderId);
+    
+    if (!order) {
+        console.error("Không tìm thấy đơn hàng:", orderId);
+        return;
+    }
+
+    // 2. Điền tiêu đề
+    const titleEl = document.getElementById('orderDetailsTitle');
+    if (titleEl) titleEl.textContent = `Chi tiết đơn hàng ${orderId}`;
+    
+    // 3. Render danh sách sản phẩm (SỬ DỤNG CLASS CSS CÓ SẴN TRONG marketPage.css)
+    const container = document.getElementById('orderDetailsContainer');
+    if (container) {
+        container.innerHTML = (order.items || []).map(item => `
+            <div class="book-card-large">
+                <div class="book-cover">
+                    <img src="${item.image || '../assets/images/nhom.png'}" 
+                         alt="${item.name}" 
+                         onerror="this.src='../assets/images/nhom.png'" />
+                </div>
+                <div class="book-info">
+                    <div class="book-name">${item.name}</div>
+                    <div class="book-qty">
+                        Số lượng: <strong>${item.quantity || 1}</strong>
+                    </div>
+                    <div class="book-price">
+                        Giá: <strong>${item.price}</strong>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // 4. Hiển thị Modal
+    const modal = document.getElementById('orderDetailsModal');
+    if (modal) modal.style.display = 'flex';
+};
+
+// 3. HÀM ĐÓNG MODAL
+window.closeOrderDetails = function() {
+    const modal = document.getElementById('orderDetailsModal');
+    if (modal) modal.style.display = 'none';
+};
+
+window.showPurchaseHistory = function() {
+    const modal = document.getElementById('ordersModal');
+    if (modal) {
+        renderPurchaseHistory();
+        modal.style.display = 'flex';
+    }
+};
+window.closePurchaseHistory = function() {
+    const modal = document.getElementById('ordersModal');
+    if (modal) modal.style.display = 'none';
+};
 // ===== Hien thi noi dung market =====
 let itemsPerPage = 8;
 let currentPage = 1;
@@ -1178,7 +1193,7 @@ let searchQuery = "";
 
 // Tải dữ liệu CHÍNH XÁC MỘT LẦN khi script chạy
 const dataString = localStorage.getItem("adminProducts");
-const marketItems = dataString ? JSON.parse(dataString) : market;
+let marketItems = dataString ? JSON.parse(dataString) : market;
 let filteredResults = [];
 
 function clearFilters() {
@@ -1257,15 +1272,15 @@ function renderMarketItems(page = 1) {
   if (!container) return;
   
   container.innerHTML = "";
-
+  const availableItems = filteredResults.filter(item => (item.quantity && item.quantity > 0));
   const start = (page - 1) * itemsPerPage;
 	const end = start + itemsPerPage;
-	let pageItems = filteredResults.slice(start, end); 
+	let pageItems = availableItems.slice(start, end); 
 
 	pageItems.forEach(item => {
 		const itemDiv = document.createElement("div");
 		itemDiv.classList.add("market-item");
-
+    
 		itemDiv.innerHTML = `
 		<div class="item-link">
 			<img src="${item.image}" alt="${item.name}" class="item-image" />
@@ -1543,7 +1558,7 @@ if (historyBtn) {
     });
 }
 
-// ===== XỬ LÝ MỞ POPUP TỪ HOME PAGE (Code gốc) =====
+// ===== XỬ LÝ MỞ POPUP TỪ HOME PAGE =====
 // (Chúng ta di chuyển code này xuống đây để nó chạy cùng cụm)
 const urlParams = new URLSearchParams(window.location.search);
 const productName = urlParams.get('product');
@@ -1779,5 +1794,37 @@ window.handleAddressConfirmation = function() {
     // và TRUYỀN địa chỉ đã chọn vào
     if (typeof paymentAction === 'function') {
         paymentAction(chosenAddress);
+    }
+}
+function updateStockAfterPurchase(cart) {
+    //Lấy dữ liệu kho mới nhất từ localStorage (hoặc dùng marketItems hiện tại)
+    const currentData = JSON.parse(localStorage.getItem("adminProducts")) || marketItems;
+    if (!currentData) return;
+
+    // Duyệt qua từng món trong giỏ hàng để trừ kho
+    cart.forEach(cartItem => {
+        Object.values(currentData).forEach(category => {
+            // Tìm sản phẩm khớp tên
+            const product = category.items.find(p => p.name === cartItem.name);
+            if (product) {
+                // Trừ số lượng
+                product.quantity = Math.max(0, product.quantity - cartItem.quantity);
+            }
+        });
+    });
+
+    // Lưu ngược lại vào localStorage
+    localStorage.setItem("adminProducts", JSON.stringify(currentData));
+
+    //CẬP NHẬT BIẾN TOÀN CỤC & GIAO DIỆN
+    // Cập nhật biến marketItems đang chạy trong ram
+    marketItems = currentData; 
+
+    // Gọi hàm lọc để tính toán lại danh sách hiển thị (filteredResults) và reset về trang 1
+    if (typeof applyFilters === 'function') {
+        applyFilters(); 
+    } else {
+        // Fallback nếu không có hàm applyFilters
+        renderMarketItems(1);
     }
 }
