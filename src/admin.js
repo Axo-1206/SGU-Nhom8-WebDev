@@ -316,9 +316,9 @@ addProductForm.addEventListener("submit", (e) => {
             return;
         }
         const idExists = Object.values(marketItems).some(cat => 
-            cat.items.some(item => item.id === id)
+            cat.items.some(item => String(item.id).trim() === id)
         );
-
+        
         if (idExists) {
             alert("Lỗi: ID sản phẩm này đã tồn tại!");
             return;
@@ -330,7 +330,7 @@ addProductForm.addEventListener("submit", (e) => {
     }
 
     saveProductsToStorage();
-    renderProductTable(productCurrentPage); // Render lại trang hiện tại
+    renderProductTable(1); // Render lại trang hiện tại
     closeModal();
 });
 
@@ -1462,8 +1462,11 @@ function renderOrdersTable(page = 1) {
             const tr = document.createElement("tr");
             const user = order.user || { username: 'Guest', email: 'N/A', address: 'N/A' };
             const orderStatus = order.status || 'Chờ xử lý';
-            const isLocked = order.isLocked === true;
-
+            const isCancelled = orderStatus === 'Đã hủy';
+            const isLocked = order.isLocked === true || isCancelled;
+            const saveButton = isLocked 
+                ? '<span style="color:red; font-weight:bold;"><i class="fas fa-lock"></i> Đã khóa</span>' 
+                : `<button class="save-order-btn" data-id="${order.id}">Lưu & Khóa</button>`;
             tr.innerHTML = `
                 <td>${order.id}</td>
                 <td>${new Date(order.date).toLocaleString()}</td>
@@ -1474,17 +1477,13 @@ function renderOrdersTable(page = 1) {
                 <td>
                     <select class="order-status-select" data-id="${order.id}" ${isLocked ? 'disabled' : ''} style="${isLocked ? 'background:#eee; cursor:not-allowed;' : ''}">
                         <option value="Chờ xử lý" ${orderStatus === 'Chờ xử lý' ? 'selected' : ''}>Chờ xử lý</option>
-                        <option value="Chờ thanh toán khi nhận hàng" ${orderStatus === 'Chờ thanh toán khi nhận hàng' ? 'selected' : ''}>Chờ thanh toán</option>
                         <option value="Đang giao" ${orderStatus === 'Đang giao' ? 'selected' : ''}>Đang giao</option>
                         <option value="Đã giao" ${orderStatus === 'Đã giao' ? 'selected' : ''}>Đã giao</option>
                         <option value="Đã hủy" ${orderStatus === 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
                     </select>
                 </td>
                 <td>
-                    ${isLocked 
-                        ? '<span style="color:red; font-weight:bold;"><i class="fas fa-lock"></i> Đã khóa</span>' 
-                        : `<button class="save-order-btn" data-id="${order.id}">Lưu & Khóa</button>`
-                    }
+                    ${saveButton}
                     <button class="view-order-btn" data-id="${order.id}" style="background:#007bff; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Xem chi tiết</button>
                 </td>
                 </td>
@@ -1529,7 +1528,7 @@ function openViewOrderModal(orderId) {
 
     tbodyEl.innerHTML = "";
     (order.items || []).forEach(item => {
-        const displayPrice = formatPriceK(item.price);
+        const displayPrice = formatK(item.price);
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${item.name}</td>
@@ -1581,34 +1580,94 @@ document.getElementById("price").style.display = "none";
 
 
 // Lắng nghe sự kiện thay đổi trạng thái đơn hàng
+// --- TÌM VÀ SỬA TRONG src/admin.js ---
+
+// [admin.js] Thay thế toàn bộ đoạn listener 'change' cũ bằng đoạn này:
+
 document.querySelector(".orders-table tbody").addEventListener('change', (e) => {
     if (e.target.classList.contains('order-status-select')) {
         const orderId = e.target.dataset.id;
         const newStatus = e.target.value;
-        
 
         const allOrders = loadAllOrdersFromStorage();
         const orderIndex = allOrders.findIndex(o => o.id === orderId);
         
         if (orderIndex !== -1) {
-            allOrders[orderIndex].status = newStatus;
+            const currentOrder = allOrders[orderIndex];
+            const oldStatus = currentOrder.status; 
+
+            // === LOGIC HỦY ĐƠN: HOÀN KHO + KHÓA ===
+            if (newStatus === 'Đã hủy' && oldStatus !== 'Đã hủy') {
+                // Hỏi xác nhận
+                if(confirm("Xác nhận HỦY đơn hàng này?\n\n- Số lượng sẽ được hoàn về kho.\n- Đơn hàng sẽ bị KHÓA vĩnh viễn.")) {
+                    
+                    // 1. CẬP NHẬT BIẾN TOÀN CỤC marketItems
+                    // (Quan trọng: Phải cập nhật biến này để bảng Market hiển thị đúng ngay lập tức)
+                    
+                    // Đảm bảo lấy dữ liệu mới nhất từ storage trước khi cộng
+                    marketItems = loadProductsFromStorage(); 
+                    
+                    let restoredCount = 0;
+
+                    if (currentOrder.items && currentOrder.items.length > 0) {
+                        currentOrder.items.forEach(orderItem => {
+                            // Tìm và cộng số lượng
+                            Object.values(marketItems).forEach(cat => {
+                                if (cat.items) {
+                                    const product = cat.items.find(p => p.name === orderItem.name);
+                                    if (product) {
+                                        product.quantity = (parseInt(product.quantity) || 0) + (parseInt(orderItem.quantity) || 1);
+                                        restoredCount++;
+                                    }
+                                }
+                            });
+                        });
+                    }
+                    
+                    // Lưu lại biến marketItems đã sửa vào localStorage
+                    saveProductsToStorage();
+                    
+                    // 2. Cập nhật trạng thái đơn hàng và KHÓA
+                    currentOrder.status = newStatus;
+                    currentOrder.isLocked = true; 
+                    
+                    alert(`Đã hủy và hoàn kho ${restoredCount} loại sản phẩm.`);
+
+                } else {
+                    // Nếu người dùng bấm Cancel (không muốn hủy), reset dropdown về trạng thái cũ
+                    e.target.value = oldStatus;
+                    return; 
+                }
+            } else {
+                // Nếu không phải hủy, chỉ cập nhật trạng thái bình thường
+                currentOrder.status = newStatus;
+            }
+
+            // 3. Lưu dữ liệu đơn hàng
             saveAllOrdersToStorage(allOrders);
             
+            // 4. Đồng bộ sang dữ liệu cá nhân của user
             const userOrdersString = localStorage.getItem('orders');
             if (userOrdersString) {
                 try {
                     let userOrders = JSON.parse(userOrdersString);
                     const userOrderIndex = userOrders.findIndex(o => o.id === orderId);
                     if (userOrderIndex !== -1) {
-                        userOrders[userOrderIndex].status = newStatus;
+                        userOrders[userOrderIndex].status = currentOrder.status;
+                        userOrders[userOrderIndex].isLocked = currentOrder.isLocked;
                         localStorage.setItem('orders', JSON.stringify(userOrders));
                     }
-                } catch (e) {
-                    console.error("Lỗi cập nhật đơn hàng cá nhân:", e);
+                } catch (err) {
+                    console.error("Lỗi đồng bộ đơn hàng cá nhân:", err);
                 }
             }
             
+            // 5. Render lại bảng đơn hàng
             renderOrdersTable(orderCurrentPage);
+            
+            // 6. Render lại bảng sản phẩm NGAY LẬP TỨC (về trang 1)
+            // Vì biến marketItems đã được cập nhật ở Bước 1, hàm này sẽ hiển thị đúng số lượng mới
+            renderProductTable(1); 
         }
     }
 });

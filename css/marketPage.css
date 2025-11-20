@@ -1981,13 +1981,15 @@
 
 .order-books-grid {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    flex-direction: row;
     gap: 15px;
     padding: 10px 0;
 }
 
 
 .book-card-large {
+    width: 49%;
     display: flex;
     align-items: flex-start; 
     gap: 15px;
