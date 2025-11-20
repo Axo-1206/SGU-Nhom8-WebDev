@@ -585,10 +585,22 @@ function generateId(name) {
     return name.toLowerCase().replace(/[^a-z0-9]/g, '-');
 }
 
-// Định dạng giá theo dạng 'k' (ví dụ 20 -> 20k)
 export function formatK(price) {
-  if (price === null || price === undefined) return '';
-  const num = parseInt(String(price).replace(/[^\d]/g, ''), 10) || 0;
+  if (price === null || price === undefined || price === '') return '0k';
+
+  // Xử lý nếu đầu vào là số 
+  if (typeof price === 'number') {
+      // Làm tròn tối đa 2 số lẻ để tránh lỗi số
+      const rounded = Math.round(price * 100) / 100; 
+      return `${rounded}k`;
+  }
+
+  const str = String(price);
+  const cleanStr = str.replace(/[^0-9.]/g, '');
+  
+  let num = parseFloat(cleanStr);
+  if (isNaN(num)) num = 0;
+
   return `${num}k`;
 }
 
@@ -1019,7 +1031,7 @@ window.processCashPayment = function (chosenAddress) {
                 email: currentUser ? currentUser.email : "N/A",
                 address: chosenAddress,
             },
-            status: "Chờ thanh toán khi nhận hàng"  // ⭐ TRẠNG THÁI KHÁC QR
+            status: "Chờ xử lý"
         };
 
         // Lưu cá nhân

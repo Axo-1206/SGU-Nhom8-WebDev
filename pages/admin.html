@@ -61,7 +61,7 @@
                 <li id="accounts-tab">Accounts Control</li>
                 <li id="imports-tab">Import Control</li>
                 <li id="price-tab">Price Control</li>
-                <li id="orders-tab">Order Management</li> 
+                <li id="orders-tab">Order Control</li> 
             </ul>
 
         </div>
@@ -211,6 +211,21 @@
                     <option value="Đã giao">Đã giao</option>
                     <option value="Đã hủy">Đã hủy</option>
                 </select>
+                <div class="filter-group">
+                    <div>
+                    <label >Từ ngày:</label>
+                    <input type="date" id="order-date-from">
+                </div>
+
+                <div>
+                    <label >Đến ngày:</label>
+                    <input type="date" id="order-date-to">
+                </div>
+                <div><button id="clear-order-filter" class="def-btn">Xóa lọc</button>
+                </div>
+                </div>
+        
+                
             </div>
 
             <div class="table-wrapper">
